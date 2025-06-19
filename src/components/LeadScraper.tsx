@@ -61,7 +61,7 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
             <Textarea
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Enter search keywords…"
+              placeholder="Describe the leads you want, e.g. 'mid-sized tech startups in Tel Aviv' or 'small marketing agencies in Haifa'"
               className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 min-h-[250px] resize-none"
               disabled={isLoading}
             />
