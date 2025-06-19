@@ -8,6 +8,9 @@ import {
 } from './ui/dropdown-menu';
 import { ChevronDown, Bell, Ban, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { WEBHOOK_CONFIG } from '@/config/webhooks';
+import { validateAndSanitizeLead } from '@/utils/validation';
+import { SecureHttpClient } from '@/utils/httpClient';
 
 interface Lead {
   name?: string;
@@ -37,27 +40,25 @@ const LeadDropdownMenu = ({ lead, children }: LeadDropdownMenuProps) => {
     console.log('Adding lead to follow-up reminder:', lead);
     
     try {
-      const response = await fetch('https://twosteps.app.n8n.cloud/webhook/072ecdd7-9882-452c-a82f-f60373aa8afc', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(lead),
-      });
+      // Validate and sanitize lead data
+      const sanitizedLead = validateAndSanitizeLead(lead);
+      
+      await SecureHttpClient.post(WEBHOOK_CONFIG.FOLLOW_UP_WEBHOOK, sanitizedLead);
 
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: `${lead.name || 'Lead'} has been added to follow-up reminders.`,
-        });
-      } else {
-        throw new Error('Failed to add to follow-up reminders');
-      }
+      toast({
+        title: "Success",
+        description: `${sanitizedLead.name || 'Lead'} has been added to follow-up reminders.`,
+      });
     } catch (error) {
       console.error('Error adding to follow-up:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to add lead to follow-up reminders. Please try again.';
+      
       toast({
         title: "Error",
-        description: "Failed to add lead to follow-up reminders. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -72,27 +73,25 @@ const LeadDropdownMenu = ({ lead, children }: LeadDropdownMenuProps) => {
     console.log('Adding lead to blacklist:', lead);
     
     try {
-      const response = await fetch('https://twosteps.app.n8n.cloud/webhook/fa7497e1-8e4f-4866-99e7-5973d713c0e3', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(lead),
-      });
+      // Validate and sanitize lead data
+      const sanitizedLead = validateAndSanitizeLead(lead);
+      
+      await SecureHttpClient.post(WEBHOOK_CONFIG.BLACKLIST_WEBHOOK, sanitizedLead);
 
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: `${lead.name || 'Lead'} has been added to the blacklist.`,
-        });
-      } else {
-        throw new Error('Failed to add to blacklist');
-      }
+      toast({
+        title: "Success",
+        description: `${sanitizedLead.name || 'Lead'} has been added to the blacklist.`,
+      });
     } catch (error) {
       console.error('Error adding to blacklist:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to add lead to blacklist. Please try again.';
+      
       toast({
         title: "Error",
-        description: "Failed to add lead to blacklist. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

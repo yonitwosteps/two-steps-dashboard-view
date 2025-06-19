@@ -5,6 +5,10 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { WEBHOOK_CONFIG } from '@/config/webhooks';
+import { SearchQuerySchema, sanitizeString } from '@/utils/validation';
+import { SecureHttpClient } from '@/utils/httpClient';
 
 interface LeadScraperProps {
   className?: string;
@@ -13,10 +17,17 @@ interface LeadScraperProps {
 const LeadScraper = ({ className }: LeadScraperProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { toast } = useToast();
 
-  const handleSendQuery = async () => {
+  const handleSendQuery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!searchQuery.trim()) {
-      console.log('No search query entered');
+      toast({
+        title: "Error",
+        description: "Please enter a search query",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -24,24 +35,30 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
     console.log('Sending search query:', searchQuery);
     
     try {
-      const response = await fetch('https://twosteps.app.n8n.cloud/webhook/118da37f-9a78-4335-b2df-c001629ca8c1', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: searchQuery
-        })
-      });
+      // Validate and sanitize the search query
+      const sanitizedQuery = sanitizeString(searchQuery.trim());
+      const validatedQuery = SearchQuerySchema.parse({ query: sanitizedQuery });
       
-      if (response.ok) {
-        console.log('Search query sent successfully');
-        setSearchQuery(''); // Clear the input after successful send
-      } else {
-        console.error('Failed to send search query');
-      }
+      await SecureHttpClient.post(WEBHOOK_CONFIG.SCRAPER_WEBHOOK, validatedQuery);
+      
+      console.log('Search query sent successfully');
+      toast({
+        title: "Success",
+        description: "Search query has been submitted successfully.",
+      });
+      setSearchQuery(''); // Clear the input after successful send
     } catch (error) {
       console.error('Error sending search query:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to send search query. Please try again.';
+      
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -56,16 +73,17 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
         <CardTitle className="text-lg font-semibold text-white">Lead Scraper</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-6 pt-0">
-        <div className="flex flex-col h-full space-y-4">
+        <form onSubmit={handleSendQuery} className="flex flex-col h-full space-y-4">
           <Textarea
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Describe the leads you want, e.g. 'mid-sized tech startups in Tel Aviv' or 'small marketing agencies in Haifa'"
             className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 resize-none flex-1"
             disabled={isLoading}
+            maxLength={500}
           />
           <Button
-            onClick={handleSendQuery}
+            type="submit"
             disabled={isLoading || !searchQuery.trim()}
             className="bg-blue-500 hover:bg-blue-600 text-white w-full gap-2 flex-shrink-0"
           >
@@ -76,7 +94,7 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
             )}
             {isLoading ? 'Sending...' : 'Send'}
           </Button>
-        </div>
+        </form>
       </CardContent>
     </Card>
   );

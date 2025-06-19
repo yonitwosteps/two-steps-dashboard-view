@@ -1,8 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ExternalLink, Mail, Phone, Loader } from 'lucide-react';
 import LeadDropdownMenu from './LeadDropdownMenu';
 import { Toaster } from './ui/toaster';
+import { WEBHOOK_CONFIG } from '@/config/webhooks';
+import { validateAndSanitizeLead } from '@/utils/validation';
+import { SecureHttpClient } from '@/utils/httpClient';
 
 interface Lead {
   name?: string;
@@ -32,21 +36,31 @@ const RecentLeadsTable = ({ className }: RecentLeadsTableProps) => {
         setError(null);
         console.log('Fetching leads from webhook...');
         
-        const response = await fetch('https://twosteps.app.n8n.cloud/webhook/4e9c82bb-4de3-4212-ad72-a1c82b148cc1');
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch leads: ${response.status}`);
-        }
-        
+        const response = await SecureHttpClient.get(WEBHOOK_CONFIG.LEADS_FETCH_WEBHOOK);
         const data = await response.json();
+        
         console.log('Leads fetched successfully:', data);
         
-        // Ensure data is an array
-        const leadsArray = Array.isArray(data) ? data : [];
-        setLeads(leadsArray);
+        // Ensure data is an array and validate each lead
+        const rawLeads = Array.isArray(data) ? data : [];
+        const validatedLeads = rawLeads
+          .map(lead => {
+            try {
+              return validateAndSanitizeLead(lead);
+            } catch (error) {
+              console.warn('Invalid lead data filtered out:', lead, error);
+              return null;
+            }
+          })
+          .filter((lead): lead is Lead => lead !== null);
+        
+        setLeads(validatedLeads);
       } catch (err) {
         console.error('Error fetching leads:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch leads');
+        const errorMessage = err instanceof Error 
+          ? err.message 
+          : 'Failed to fetch leads';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
