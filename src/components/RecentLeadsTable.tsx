@@ -9,7 +9,7 @@ interface Lead {
   title?: string;
   organization?: string;
   country?: string;
-  state?: string;
+  city?: string;
   sanitized_phone?: number | string;
   email?: string;
   twitter_url?: string;
