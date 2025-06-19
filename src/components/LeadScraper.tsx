@@ -24,7 +24,7 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
     console.log('Sending search query:', searchQuery);
     
     try {
-      const response = await fetch('https://twosteps.app.n8n.cloud/webhook-test/118da37f-9a78-4335-b2df-c001629ca8c1', {
+      const response = await fetch('https://twosteps.app.n8n.cloud/webhook/118da37f-9a78-4335-b2df-c001629ca8c1', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
