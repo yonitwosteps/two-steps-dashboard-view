@@ -1,7 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ExternalLink, Mail, Phone, Loader } from 'lucide-react';
+import LeadDropdownMenu from './LeadDropdownMenu';
+import { Toaster } from './ui/toaster';
 
 interface Lead {
   name?: string;
@@ -60,7 +61,9 @@ const RecentLeadsTable = ({ className }: RecentLeadsTableProps) => {
 
     return (
       <div className="flex items-center gap-2">
-        <span className="text-white font-medium">{name}</span>
+        <LeadDropdownMenu lead={lead}>
+          <span className="text-white font-medium">{name}</span>
+        </LeadDropdownMenu>
         {linkedinUrl && (
           <a
             href={linkedinUrl}
@@ -119,79 +122,82 @@ const RecentLeadsTable = ({ className }: RecentLeadsTableProps) => {
   };
 
   return (
-    <div className={cn(
-      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300 h-[500px] flex flex-col",
-      className
-    )}>
-      <h3 className="text-slate-300 text-sm font-medium mb-6">Recent Leads</h3>
-      
-      <div className="overflow-x-auto flex-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="flex items-center gap-2 text-slate-300">
-              <Loader className="w-5 h-5 animate-spin" />
-              <span>Loading leads...</span>
+    <>
+      <div className={cn(
+        "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300 h-[500px] flex flex-col",
+        className
+      )}>
+        <h3 className="text-slate-300 text-sm font-medium mb-6">Recent Leads</h3>
+        
+        <div className="overflow-x-auto flex-1">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="flex items-center gap-2 text-slate-300">
+                <Loader className="w-5 h-5 animate-spin" />
+                <span>Loading leads...</span>
+              </div>
             </div>
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-red-400 text-center">
-              <p className="font-medium mb-2">Error loading leads</p>
-              <p className="text-sm text-red-300">{error}</p>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-red-400 text-center">
+                <p className="font-medium mb-2">Error loading leads</p>
+                <p className="text-sm text-red-300">{error}</p>
+              </div>
             </div>
-          </div>
-        ) : leads.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-slate-400">No leads found</p>
-          </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-700/50">
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[120px]">Name</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[100px]">Title</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[120px]">Organization</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[80px]">Country</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">City</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[100px]">Phone</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[140px]">Email</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">Twitter</th>
-              </tr>
-            </thead>
-            <tbody className="space-y-2">
-              {leads.map((lead, index) => (
-                <tr key={index} className="hover:bg-slate-700/20 transition-colors">
-                  <td className="py-3">
-                    {renderNameWithLinks(lead)}
-                  </td>
-                  <td className="py-3 text-slate-200 text-xs">
-                    {lead.title || '-'}
-                  </td>
-                  <td className="py-3 text-slate-200 text-xs">
-                    {lead.organization || '-'}
-                  </td>
-                  <td className="py-3 text-slate-200 text-xs">
-                    {lead.country || '-'}
-                  </td>
-                  <td className="py-3 text-slate-200 text-xs">
-                    {lead.city || '-'}
-                  </td>
-                  <td className="py-3">
-                    {renderPhone(lead.sanitized_phone)}
-                  </td>
-                  <td className="py-3">
-                    {renderEmail(lead.email)}
-                  </td>
-                  <td className="py-3">
-                    {renderTwitter(lead.twitter_url)}
-                  </td>
+          ) : leads.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-slate-400">No leads found</p>
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-700/50">
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[120px]">Name</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[100px]">Title</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[120px]">Organization</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[80px]">Country</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">City</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[100px]">Phone</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[140px]">Email</th>
+                  <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">Twitter</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody className="space-y-2">
+                {leads.map((lead, index) => (
+                  <tr key={index} className="hover:bg-slate-700/20 transition-colors">
+                    <td className="py-3">
+                      {renderNameWithLinks(lead)}
+                    </td>
+                    <td className="py-3 text-slate-200 text-xs">
+                      {lead.title || '-'}
+                    </td>
+                    <td className="py-3 text-slate-200 text-xs">
+                      {lead.organization || '-'}
+                    </td>
+                    <td className="py-3 text-slate-200 text-xs">
+                      {lead.country || '-'}
+                    </td>
+                    <td className="py-3 text-slate-200 text-xs">
+                      {lead.city || '-'}
+                    </td>
+                    <td className="py-3">
+                      {renderPhone(lead.sanitized_phone)}
+                    </td>
+                    <td className="py-3">
+                      {renderEmail(lead.email)}
+                    </td>
+                    <td className="py-3">
+                      {renderTwitter(lead.twitter_url)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-    </div>
+      <Toaster />
+    </>
   );
 };
 
