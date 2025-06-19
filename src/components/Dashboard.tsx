@@ -2,6 +2,11 @@
 import React from 'react';
 import LeadScraper from './LeadScraper';
 import RecentLeadsTable from './RecentLeadsTable';
+import TotalLeads from './TotalLeads';
+import FollowUpReminders from './FollowUpReminders';
+import LeadsChart from './LeadsChart';
+import TeamActivity from './TeamActivity';
+import BlacklistChecker from './BlacklistChecker';
 
 const Dashboard = () => {
   return (
@@ -19,17 +24,34 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
-        {/* Lead Scraper - Takes up 1 column */}
+      {/* Main widgets grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        {/* Row 1: Stats and key metrics */}
         <div className="xl:col-span-1">
+          <TotalLeads />
+        </div>
+        <div className="xl:col-span-1">
+          <BlacklistChecker />
+        </div>
+        <div className="md:col-span-2 xl:col-span-2">
+          <LeadsChart />
+        </div>
+
+        {/* Row 2: Team and follow-ups */}
+        <div className="md:col-span-1 xl:col-span-1">
+          <TeamActivity />
+        </div>
+        <div className="md:col-span-1 xl:col-span-1">
+          <FollowUpReminders />
+        </div>
+        <div className="md:col-span-2 xl:col-span-2">
           <LeadScraper />
         </div>
-        
-        {/* Recent Leads Table - Takes up 2 columns for more space */}
-        <div className="xl:col-span-2">
-          <RecentLeadsTable />
-        </div>
+      </div>
+
+      {/* Recent Leads Table - Full width at bottom */}
+      <div className="w-full">
+        <RecentLeadsTable />
       </div>
     </div>
   );
