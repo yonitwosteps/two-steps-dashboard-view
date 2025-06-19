@@ -33,11 +33,12 @@ const Sidebar = ({ className }: SidebarProps) => {
     <div className={cn("w-64 bg-gray-900/50 backdrop-blur-xl border-r border-gray-800/50 h-screen flex flex-col", className)}>
       {/* Logo */}
       <div className="p-6 border-b border-gray-800/50">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">L</span>
-          </div>
-          <span className="text-white font-semibold">LeadFlow</span>
+        <div className="flex items-center justify-center">
+          <img 
+            src="/lovable-uploads/ce3a6514-7cbb-4d33-83c6-9ef9f05ded13.png" 
+            alt="Logo" 
+            className="h-12 w-auto object-contain"
+          />
         </div>
       </div>
 
