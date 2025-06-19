@@ -62,7 +62,7 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Enter search keywords…"
-              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 min-h-[120px] resize-none"
+              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 min-h-[140px] resize-none"
               disabled={isLoading}
             />
             <Button
