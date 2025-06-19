@@ -26,32 +26,32 @@ const ScrapingHistory = ({ className }: ScrapingHistoryProps) => {
 
   const getStatusColor = (status: ScrapingEvent['status']) => {
     switch (status) {
-      case 'success': return 'bg-green-500/20 text-green-400';
+      case 'success': return 'bg-blue-500/20 text-blue-300';
       case 'failed': return 'bg-red-500/20 text-red-400';
-      case 'running': return 'bg-blue-500/20 text-blue-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'running': return 'bg-purple-500/20 text-purple-300';
+      default: return 'bg-slate-500/20 text-slate-300';
     }
   };
 
   return (
     <div className={cn(
-      "bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/30 transition-all duration-300",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300",
       className
     )}>
       <div className="flex items-center space-x-2 mb-6">
-        <Clock className="w-4 h-4 text-gray-400" />
-        <h3 className="text-gray-400 text-sm font-medium">Scraping History</h3>
+        <Clock className="w-4 h-4 text-slate-300" />
+        <h3 className="text-slate-300 text-sm font-medium">Scraping History</h3>
       </div>
       
       <div className="space-y-3">
         {scrapingEvents.map((event) => (
-          <div key={event.id} className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+          <div key={event.id} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors">
             <div className="flex-1">
               <div className="text-white text-sm font-medium">
                 {event.timestamp}
               </div>
               {event.status === 'success' && (
-                <div className="text-gray-400 text-xs">
+                <div className="text-slate-300 text-xs">
                   {event.leadsFound} leads found
                 </div>
               )}

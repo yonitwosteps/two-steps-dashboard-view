@@ -17,13 +17,13 @@ const ConversionRate = ({ className }: ConversionRateProps) => {
 
   return (
     <div className={cn(
-      "bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/30 transition-all duration-300 group",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300 group",
       className
     )}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-gray-400 text-sm font-medium">Conversion Rate</h3>
-        <div className="p-2 rounded-lg bg-green-500/20">
-          <TrendingUp className="w-5 h-5 text-green-400" />
+        <h3 className="text-slate-300 text-sm font-medium">Conversion Rate</h3>
+        <div className="p-2 rounded-lg bg-blue-500/20">
+          <TrendingUp className="w-5 h-5 text-blue-400" />
         </div>
       </div>
       
@@ -39,7 +39,7 @@ const ConversionRate = ({ className }: ConversionRateProps) => {
             return (
               <div
                 key={index}
-                className="bg-gradient-to-t from-green-500/60 to-green-400/40 rounded-sm transition-all duration-500 hover:from-green-500 hover:to-green-400"
+                className="bg-gradient-to-t from-blue-500/60 to-blue-400/40 rounded-sm transition-all duration-500 hover:from-blue-500 hover:to-blue-400"
                 style={{ 
                   height: `${height}%`,
                   width: '8px'
@@ -50,10 +50,10 @@ const ConversionRate = ({ className }: ConversionRateProps) => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <span className="px-2 py-1 rounded-md text-xs font-medium bg-green-500/20 text-green-400">
+          <span className="px-2 py-1 rounded-md text-xs font-medium bg-blue-500/20 text-blue-300">
             {change}
           </span>
-          <span className="text-gray-500 text-xs">From last month</span>
+          <span className="text-slate-400 text-xs">From last month</span>
         </div>
       </div>
     </div>

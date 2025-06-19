@@ -14,10 +14,12 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Lead Management Dashboard</h1>
-          <p className="text-gray-400 mt-2">Track and manage your leads effectively</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            Lead Management Dashboard
+          </h1>
+          <p className="text-slate-300 mt-2">Track and manage your leads effectively</p>
         </div>
-        <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+        <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
           Export Data
         </button>
       </div>
@@ -41,7 +43,7 @@ const Dashboard = () => {
           change="+24.1%"
           changeType="positive"
           icon={Target}
-          iconColor="bg-green-500/20"
+          iconColor="bg-purple-500/20"
         />
         
         {/* Active Leads Metric */}
@@ -51,7 +53,7 @@ const Dashboard = () => {
           change="+12.8%"
           changeType="positive"
           icon={UserCheck}
-          iconColor="bg-purple-500/20"
+          iconColor="bg-indigo-500/20"
         />
         
         {/* Monthly Growth Metric */}
@@ -61,7 +63,7 @@ const Dashboard = () => {
           change="+8.4%"
           changeType="positive"
           icon={TrendingUp}
-          iconColor="bg-yellow-500/20"
+          iconColor="bg-cyan-500/20"
         />
       </div>
 

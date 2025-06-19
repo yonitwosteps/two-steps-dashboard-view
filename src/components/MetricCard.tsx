@@ -24,11 +24,11 @@ const MetricCard = ({
 }: MetricCardProps) => {
   return (
     <div className={cn(
-      "bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-xl p-6 hover:bg-gray-800/30 transition-all duration-300 group",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/60 transition-all duration-300 group",
       className
     )}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-gray-400 text-sm font-medium">{title}</h3>
+        <h3 className="text-slate-300 text-sm font-medium">{title}</h3>
         <div className={cn("p-2 rounded-lg", iconColor)}>
           <Icon className="w-5 h-5 text-white" />
         </div>
@@ -42,12 +42,12 @@ const MetricCard = ({
           <span className={cn(
             "px-2 py-1 rounded-md text-xs font-medium",
             changeType === 'positive' 
-              ? "bg-green-500/20 text-green-400" 
+              ? "bg-blue-500/20 text-blue-300" 
               : "bg-red-500/20 text-red-400"
           )}>
             {change}
           </span>
-          <span className="text-gray-500 text-xs">From 204,234</span>
+          <span className="text-slate-400 text-xs">From 204,234</span>
         </div>
       </div>
     </div>

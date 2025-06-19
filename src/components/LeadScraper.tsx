@@ -41,21 +41,21 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
 
   return (
     <div className={cn(
-      "bg-gray-900/50 backdrop-blur-xl border border-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/30 transition-all duration-300 group cursor-pointer",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300 group cursor-pointer",
       className
     )}>
       <div className="flex flex-col items-center justify-center text-center space-y-4">
-        <div className="p-4 bg-green-500/20 rounded-xl group-hover:scale-105 transition-transform">
+        <div className="p-4 bg-blue-500/20 rounded-xl group-hover:scale-105 transition-transform">
           {isLoading ? (
-            <Loader className="w-8 h-8 text-green-400 animate-spin" />
+            <Loader className="w-8 h-8 text-blue-400 animate-spin" />
           ) : (
-            <Play className="w-8 h-8 text-green-400" />
+            <Play className="w-8 h-8 text-blue-400" />
           )}
         </div>
         
         <div>
           <h3 className="text-lg font-semibold text-white mb-2">Lead Scraper</h3>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-slate-300 text-sm mb-4">
             Find new potential leads automatically
           </p>
         </div>
@@ -63,7 +63,7 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
         <button
           onClick={handleScrapeLeads}
           disabled={isLoading}
-          className="bg-green-500 hover:bg-green-600 disabled:bg-green-500/50 text-white px-6 py-3 rounded-lg font-medium transition-colors w-full"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-500/50 disabled:to-blue-600/50 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 w-full shadow-lg hover:shadow-xl"
         >
           {isLoading ? 'Scraping...' : 'Scrape New Leads'}
         </button>
