@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -6,7 +7,9 @@ import {
   MessageSquare, 
   Settings, 
   Clock,
-  Search
+  Search,
+  Target,
+  TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,12 +19,13 @@ interface SidebarProps {
 
 const Sidebar = ({ className }: SidebarProps) => {
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Overview', active: true },
-    { icon: Clock, label: 'Timeline', active: false },
-    { icon: LayoutDashboard, label: 'Dashboard', active: false, badge: '2' },
-    { icon: Users, label: 'Users', active: false },
-    { icon: Activity, label: 'Activity', active: false },
-    { icon: MessageSquare, label: 'Messages', active: false },
+    { icon: LayoutDashboard, label: 'Dashboard', active: true },
+    { icon: Users, label: 'All Leads', active: false },
+    { icon: Target, label: 'Qualified Leads', active: false, badge: '342' },
+    { icon: TrendingUp, label: 'Analytics', active: false },
+    { icon: Activity, label: 'Lead Activity', active: false },
+    { icon: MessageSquare, label: 'Communications', active: false },
+    { icon: Clock, label: 'Scraping History', active: false },
     { icon: Settings, label: 'Settings', active: false },
   ];
 
@@ -31,9 +35,9 @@ const Sidebar = ({ className }: SidebarProps) => {
       <div className="p-6 border-b border-gray-800/50">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">B</span>
+            <span className="text-white font-bold text-sm">L</span>
           </div>
-          <span className="text-white font-semibold">Baligo</span>
+          <span className="text-white font-semibold">LeadFlow</span>
         </div>
       </div>
 
@@ -43,8 +47,8 @@ const Sidebar = ({ className }: SidebarProps) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search"
-            className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            placeholder="Search leads..."
+            className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
           />
         </div>
       </div>
@@ -53,7 +57,7 @@ const Sidebar = ({ className }: SidebarProps) => {
       <nav className="flex-1 px-4">
         <div className="space-y-1">
           <div className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-3">
-            Application
+            Lead Management
           </div>
           {menuItems.slice(0, 4).map((item, index) => (
             <a
@@ -62,7 +66,7 @@ const Sidebar = ({ className }: SidebarProps) => {
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 item.active 
-                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/30" 
+                  ? "bg-green-600/20 text-green-400 border border-green-500/30" 
                   : "text-gray-300 hover:bg-gray-800/50 hover:text-white"
               )}
             >
@@ -79,7 +83,7 @@ const Sidebar = ({ className }: SidebarProps) => {
 
         <div className="mt-8 space-y-1">
           <div className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-3">
-            Others
+            Tools & Settings
           </div>
           {menuItems.slice(4).map((item, index) => (
             <a
