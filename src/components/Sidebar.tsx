@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -6,7 +5,7 @@ import {
   Activity, 
   MessageSquare, 
   Settings, 
-  Timeline,
+  Clock,
   Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,7 +17,7 @@ interface SidebarProps {
 const Sidebar = ({ className }: SidebarProps) => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Overview', active: true },
-    { icon: Timeline, label: 'Timeline', active: false },
+    { icon: Clock, label: 'Timeline', active: false },
     { icon: LayoutDashboard, label: 'Dashboard', active: false, badge: '2' },
     { icon: Users, label: 'Users', active: false },
     { icon: Activity, label: 'Activity', active: false },
