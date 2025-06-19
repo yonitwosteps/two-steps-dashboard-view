@@ -15,8 +15,8 @@ const TotalLeads = () => {
         <Users className="h-4 w-4 text-slate-400" />
       </CardHeader>
       <CardContent className="flex-1 flex flex-col justify-center">
-        <div className="text-3xl font-bold text-white mb-2">{totalLeads.toLocaleString()}</div>
-        <p className="text-xs text-slate-400">
+        <div className="text-6xl font-extrabold text-white mb-2">{totalLeads.toLocaleString()}</div>
+        <p className="text-sm text-slate-400">
           <span className="text-green-400">+{monthlyGrowth}%</span> from last month
         </p>
       </CardContent>
