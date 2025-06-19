@@ -152,7 +152,7 @@ const RecentLeadsTable = ({ className }: RecentLeadsTableProps) => {
                 <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[100px]">Title</th>
                 <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[120px]">Organization</th>
                 <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[80px]">Country</th>
-                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">State</th>
+                <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">City</th>
                 <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[100px]">Phone</th>
                 <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[140px]">Email</th>
                 <th className="text-left text-slate-300 text-xs font-medium pb-3 min-w-[60px]">Twitter</th>
@@ -174,7 +174,7 @@ const RecentLeadsTable = ({ className }: RecentLeadsTableProps) => {
                     {lead.country || '-'}
                   </td>
                   <td className="py-3 text-slate-200 text-xs">
-                    {lead.state || '-'}
+                    {lead.city || '-'}
                   </td>
                   <td className="py-3">
                     {renderPhone(lead.sanitized_phone)}
