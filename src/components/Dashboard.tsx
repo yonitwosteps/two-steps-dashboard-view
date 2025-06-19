@@ -20,7 +20,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
         {/* Lead Scraper - Takes up 1 column */}
         <div className="xl:col-span-1">
           <LeadScraper />
