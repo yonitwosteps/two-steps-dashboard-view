@@ -49,20 +49,20 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
 
   return (
     <div className={cn(
-      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl hover:bg-slate-800/60 transition-all duration-300 group",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl hover:bg-slate-800/60 transition-all duration-300 group h-96",
       className
     )}>
-      <Card className="bg-transparent border-none shadow-none">
+      <Card className="bg-transparent border-none shadow-none h-full">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-white">Lead Scraper</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
+        <CardContent className="space-y-4 flex flex-col h-full">
+          <div className="space-y-3 flex-1 flex flex-col">
             <Textarea
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Describe the leads you want, e.g. 'mid-sized tech startups in Tel Aviv' or 'small marketing agencies in Haifa'"
-              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 min-h-[250px] resize-none"
+              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 flex-1 resize-none"
               disabled={isLoading}
             />
             <Button
