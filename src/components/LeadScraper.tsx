@@ -56,7 +56,7 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-white">Lead Scraper</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 flex flex-col h-full">
+        <CardContent className="space-y-4 flex flex-col h-full p-6 pt-0">
           <div className="space-y-3 flex-1 flex flex-col">
             <Textarea
               value={searchQuery}
