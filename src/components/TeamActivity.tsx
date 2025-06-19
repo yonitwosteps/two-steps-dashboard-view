@@ -16,11 +16,11 @@ const TeamActivity = () => {
   };
 
   return (
-    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300">
-      <CardHeader>
+    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-sm font-medium text-slate-300">Team Activity</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="flex-1 overflow-y-auto space-y-3">
         {teamMembers.map((member) => (
           <div key={member.id} className="flex items-center justify-between p-2 rounded-lg bg-slate-700/30">
             <div className="flex items-center gap-3">

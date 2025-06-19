@@ -5,12 +5,16 @@ import Dashboard from '../components/Dashboard';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex">
-      {/* Sidebar */}
-      <Sidebar />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex w-full">
+      {/* Fixed Sidebar */}
+      <div className="fixed left-0 top-0 h-screen z-10">
+        <Sidebar />
+      </div>
       
-      {/* Main Content */}
-      <Dashboard />
+      {/* Main Content with left margin for sidebar */}
+      <div className="flex-1 ml-64">
+        <Dashboard />
+      </div>
       
       {/* Background decoration - Subtle gradients matching the new theme */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

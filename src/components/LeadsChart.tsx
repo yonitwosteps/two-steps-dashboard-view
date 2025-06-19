@@ -16,12 +16,12 @@ const LeadsChart = () => {
   ];
 
   return (
-    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300">
-      <CardHeader>
+    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-sm font-medium text-slate-300">Leads This Week</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[200px] w-full">
+      <CardContent className="flex-1 flex flex-col">
+        <div className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

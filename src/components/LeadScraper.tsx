@@ -48,39 +48,37 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
   };
 
   return (
-    <div className={cn(
-      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl hover:bg-slate-800/60 transition-all duration-300 group h-[500px]",
+    <Card className={cn(
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col",
       className
     )}>
-      <Card className="bg-transparent border-none shadow-none h-full flex flex-col">
-        <CardHeader className="pb-4 flex-shrink-0">
-          <CardTitle className="text-lg font-semibold text-white">Lead Scraper</CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col p-6 pt-0">
-          <div className="flex flex-col h-full space-y-4">
-            <Textarea
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Describe the leads you want, e.g. 'mid-sized tech startups in Tel Aviv' or 'small marketing agencies in Haifa'"
-              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 resize-none flex-1"
-              disabled={isLoading}
-            />
-            <Button
-              onClick={handleSendQuery}
-              disabled={isLoading || !searchQuery.trim()}
-              className="bg-blue-500 hover:bg-blue-600 text-white w-full gap-2 flex-shrink-0"
-            >
-              {isLoading ? (
-                <Loader className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-              {isLoading ? 'Sending...' : 'Send'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <CardHeader className="pb-4 flex-shrink-0">
+        <CardTitle className="text-lg font-semibold text-white">Lead Scraper</CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col p-6 pt-0">
+        <div className="flex flex-col h-full space-y-4">
+          <Textarea
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Describe the leads you want, e.g. 'mid-sized tech startups in Tel Aviv' or 'small marketing agencies in Haifa'"
+            className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 resize-none flex-1"
+            disabled={isLoading}
+          />
+          <Button
+            onClick={handleSendQuery}
+            disabled={isLoading || !searchQuery.trim()}
+            className="bg-blue-500 hover:bg-blue-600 text-white w-full gap-2 flex-shrink-0"
+          >
+            {isLoading ? (
+              <Loader className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+            {isLoading ? 'Sending...' : 'Send'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

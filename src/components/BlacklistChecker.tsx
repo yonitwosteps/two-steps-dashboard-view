@@ -21,11 +21,11 @@ const BlacklistChecker = () => {
   };
 
   return (
-    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300">
-      <CardHeader>
+    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-sm font-medium text-slate-300">Blacklist Checker</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="flex-1 flex flex-col justify-between space-y-4">
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="p-2 rounded bg-slate-700/30">
             <p className="text-xs text-slate-400">Checked</p>
@@ -41,23 +41,25 @@ const BlacklistChecker = () => {
           </div>
         </div>
         
-        <Button 
-          onClick={handleQuickCheck}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-          size="sm"
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Quick Check ({checkCount})
-        </Button>
-        
-        {blacklistStats.blacklisted > 0 && (
-          <div className="flex items-center gap-2 p-2 bg-red-500/20 rounded text-red-400">
-            <AlertTriangle className="w-4 h-4" />
-            <span className="text-xs">
-              {blacklistStats.blacklisted} leads require attention
-            </span>
-          </div>
-        )}
+        <div className="space-y-3">
+          <Button 
+            onClick={handleQuickCheck}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            size="sm"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Quick Check ({checkCount})
+          </Button>
+          
+          {blacklistStats.blacklisted > 0 && (
+            <div className="flex items-center gap-2 p-2 bg-red-500/20 rounded text-red-400">
+              <AlertTriangle className="w-4 h-4" />
+              <span className="text-xs">
+                {blacklistStats.blacklisted} leads require attention
+              </span>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -9,14 +9,14 @@ const TotalLeads = () => {
   const monthlyGrowth = 12.5;
 
   return (
-    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
         <CardTitle className="text-sm font-medium text-slate-300">Total Leads</CardTitle>
         <Users className="h-4 w-4 text-slate-400" />
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-white">{totalLeads.toLocaleString()}</div>
-        <p className="text-xs text-slate-400 mt-1">
+      <CardContent className="flex-1 flex flex-col justify-center">
+        <div className="text-3xl font-bold text-white mb-2">{totalLeads.toLocaleString()}</div>
+        <p className="text-xs text-slate-400">
           <span className="text-green-400">+{monthlyGrowth}%</span> from last month
         </p>
       </CardContent>

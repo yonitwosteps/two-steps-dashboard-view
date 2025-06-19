@@ -24,9 +24,9 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Main widgets grid */}
+      {/* Main widgets grid - All cards same height */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {/* Row 1: Stats and key metrics */}
+        {/* Row 1: Stats and key metrics - height 300px */}
         <div className="xl:col-span-1">
           <TotalLeads />
         </div>
@@ -37,7 +37,7 @@ const Dashboard = () => {
           <LeadsChart />
         </div>
 
-        {/* Row 2: Team and follow-ups */}
+        {/* Row 2: Team and follow-ups - height 300px */}
         <div className="md:col-span-1 xl:col-span-1">
           <TeamActivity />
         </div>
