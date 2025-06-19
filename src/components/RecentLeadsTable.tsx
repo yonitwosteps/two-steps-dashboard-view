@@ -36,12 +36,12 @@ const RecentLeadsTable = ({ className }: RecentLeadsTableProps) => {
 
   return (
     <div className={cn(
-      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/60 transition-all duration-300 h-[500px] flex flex-col",
       className
     )}>
       <h3 className="text-slate-300 text-sm font-medium mb-6">Recent Leads</h3>
       
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex-1">
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-700/50">
