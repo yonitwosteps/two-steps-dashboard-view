@@ -22,22 +22,22 @@ const FollowUpReminders = () => {
 
   return (
     <Card className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 hover:border-gray-600/50 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl h-full flex flex-col group">
-      <CardHeader className="flex-shrink-0">
+      <CardHeader className="flex-shrink-0 p-4 sm:p-6">
         <CardTitle className="text-sm font-medium text-gray-400 font-dm-sans">Follow-up Reminders</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto space-y-3">
+      <CardContent className="flex-1 overflow-y-auto space-y-2 sm:space-y-3 p-4 sm:p-6 pt-0">
         {reminders.map((reminder) => (
-          <div key={reminder.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{reminder.name}</p>
+          <div key={reminder.id} className="flex items-center justify-between p-2 sm:p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200">
+            <div className="flex-1 min-w-0 mr-2">
+              <p className="text-xs sm:text-sm font-medium text-white truncate">{reminder.name}</p>
               <p className="text-xs text-gray-400 truncate">{reminder.company}</p>
             </div>
-            <div className="flex items-center gap-2 ml-2">
-              <Badge className={getPriorityColor(reminder.priority)}>
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2">
+              <Badge className={`${getPriorityColor(reminder.priority)} text-xs px-1.5 py-0.5 sm:px-2`}>
                 {reminder.priority}
               </Badge>
               {reminder.daysOverdue > 0 && (
-                <span className="text-xs text-red-400 bg-red-500/20 px-2 py-1 rounded">
+                <span className="text-xs text-red-400 bg-red-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
                   {reminder.daysOverdue}d overdue
                 </span>
               )}

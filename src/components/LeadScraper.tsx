@@ -66,26 +66,28 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
 
   return (
     <Card className={cn(
-      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col",
+      "bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg flex flex-col",
+      // Responsive height
+      "h-[280px] sm:h-[300px] lg:h-[320px]",
       className
     )}>
-      <CardHeader className="pb-4 flex-shrink-0">
-        <CardTitle className="text-lg font-semibold text-white">Lead Scraper</CardTitle>
+      <CardHeader className="pb-3 sm:pb-4 flex-shrink-0">
+        <CardTitle className="text-base sm:text-lg font-semibold text-white">Lead Scraper</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col p-6 pt-0">
-        <form onSubmit={handleSendQuery} className="flex flex-col h-full space-y-4">
+      <CardContent className="flex-1 flex flex-col p-4 sm:p-6 pt-0">
+        <form onSubmit={handleSendQuery} className="flex flex-col h-full space-y-3 sm:space-y-4">
           <Textarea
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Describe the leads you want, e.g. 'mid-sized tech startups in Tel Aviv' or 'small marketing agencies in Haifa'"
-            className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 resize-none flex-1"
+            className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 resize-none flex-1 text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
             disabled={isLoading}
             maxLength={500}
           />
           <Button
             type="submit"
             disabled={isLoading || !searchQuery.trim()}
-            className="bg-blue-500 hover:bg-blue-600 text-white w-full gap-2 flex-shrink-0"
+            className="bg-blue-500 hover:bg-blue-600 text-white w-full gap-2 flex-shrink-0 h-10 sm:h-11 text-sm sm:text-base"
           >
             {isLoading ? (
               <Loader className="w-4 h-4 animate-spin" />
