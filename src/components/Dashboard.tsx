@@ -10,47 +10,49 @@ import BlacklistChecker from './BlacklistChecker';
 
 const Dashboard = () => {
   return (
-    <div className="flex-1 p-8 overflow-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+    <div className="flex-1 p-6 lg:p-8 overflow-auto bg-gradient-to-br from-background via-muted/20 to-background">
+      {/* Enhanced Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 space-y-4 lg:space-y-0">
+        <div className="space-y-2">
+          <h1 className="text-display font-dm-sans bg-gradient-to-r from-primary via-secondary to-info bg-clip-text text-transparent">
             Lead Management Dashboard
           </h1>
-          <p className="text-slate-300 mt-2">Track and manage your leads effectively</p>
+          <p className="text-body text-muted-foreground max-w-2xl">
+            Track, analyze, and manage your leads with powerful insights and streamlined workflows
+          </p>
         </div>
-        <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+        <button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium font-dm-sans transition-all duration-200 shadow-md hover:shadow-lg button-press focus-visible">
           Export Data
         </button>
       </div>
 
-      {/* Main widgets grid - All cards same height */}
+      {/* Enhanced Stats Grid - Responsive 12-column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {/* Row 1: Stats and key metrics - height 300px */}
-        <div className="xl:col-span-1">
+        {/* First Row - Key Metrics */}
+        <div className="animate-fade-in">
           <TotalLeads />
         </div>
-        <div className="xl:col-span-1">
+        <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <BlacklistChecker />
         </div>
-        <div className="md:col-span-2 xl:col-span-2">
+        <div className="md:col-span-2 xl:col-span-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <LeadsChart />
         </div>
 
-        {/* Row 2: Team and follow-ups - height 300px */}
-        <div className="md:col-span-1 xl:col-span-1">
+        {/* Second Row - Activity & Tools */}
+        <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <TeamActivity />
         </div>
-        <div className="md:col-span-1 xl:col-span-1">
+        <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
           <FollowUpReminders />
         </div>
-        <div className="md:col-span-2 xl:col-span-2">
+        <div className="md:col-span-2 xl:col-span-2 animate-fade-in" style={{ animationDelay: '0.5s' }}>
           <LeadScraper />
         </div>
       </div>
 
-      {/* Recent Leads Table - Full width at bottom */}
-      <div className="w-full">
+      {/* Enhanced Recent Leads Section */}
+      <div className="w-full animate-slide-up" style={{ animationDelay: '0.6s' }}>
         <RecentLeadsTable />
       </div>
     </div>
