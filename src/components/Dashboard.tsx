@@ -10,18 +10,18 @@ import BlacklistChecker from './BlacklistChecker';
 
 const Dashboard = () => {
   return (
-    <div className="flex-1 p-6 lg:p-8 overflow-auto bg-gradient-to-br from-background via-muted/10 to-background min-h-screen">
+    <div className="flex-1 p-6 lg:p-8 overflow-auto bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 min-h-screen">
       {/* Enhanced Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 space-y-4 lg:space-y-0">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold font-dm-sans bg-gradient-to-r from-primary via-secondary to-info bg-clip-text text-transparent">
+        <div className="space-y-3">
+          <h1 className="text-4xl font-bold font-dm-sans bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent">
             Lead Management Dashboard
           </h1>
-          <p className="text-muted-foreground max-w-2xl font-inter">
+          <p className="text-gray-400 max-w-2xl font-inter text-lg">
             Track, analyze, and manage your leads with powerful insights and streamlined workflows
           </p>
         </div>
-        <button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium font-dm-sans transition-all duration-200 shadow-md hover:shadow-lg button-press focus-visible">
+        <button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-medium font-dm-sans transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95">
           Export Data
         </button>
       </div>

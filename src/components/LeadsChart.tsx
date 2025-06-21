@@ -16,33 +16,35 @@ const LeadsChart = () => {
   ];
 
   return (
-    <Card className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 hover:bg-slate-800/60 transition-all duration-300 rounded-xl shadow-lg h-[300px] flex flex-col">
+    <Card className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 hover:border-gray-600/50 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl h-full flex flex-col group">
       <CardHeader className="flex-shrink-0">
-        <CardTitle className="text-sm font-medium text-slate-300">Leads This Week</CardTitle>
+        <CardTitle className="text-sm font-medium text-gray-400 font-dm-sans">Leads This Week</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
         <div className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
               <XAxis 
                 dataKey="day" 
                 stroke="#9CA3AF" 
                 fontSize={12}
                 tickLine={false}
+                axisLine={false}
               />
               <YAxis 
                 stroke="#9CA3AF" 
                 fontSize={12}
                 tickLine={false}
+                axisLine={false}
               />
               <Line 
                 type="monotone" 
                 dataKey="leads" 
-                stroke="#3B82F6" 
-                strokeWidth={2}
-                dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#3B82F6', strokeWidth: 2 }}
+                stroke="#60A5FA" 
+                strokeWidth={3}
+                dot={{ fill: '#60A5FA', strokeWidth: 0, r: 5 }}
+                activeDot={{ r: 7, stroke: '#60A5FA', strokeWidth: 2, fill: '#1E40AF' }}
               />
             </LineChart>
           </ResponsiveContainer>
