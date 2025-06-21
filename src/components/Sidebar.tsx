@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -13,28 +12,37 @@ import {
   ChevronLeft,
   ChevronRight,
   Menu,
-  X
+  X,
+  GitBranch
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
   className?: string;
+  activeView: string;
+  onViewChange: (view: string) => void;
 }
 
-const Sidebar = ({ className }: SidebarProps) => {
+const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Users, label: 'All Leads', active: false },
-    { icon: Target, label: 'Qualified Leads', active: false, badge: '342' },
-    { icon: TrendingUp, label: 'Analytics', active: false },
-    { icon: Activity, label: 'Lead Activity', active: false },
-    { icon: MessageSquare, label: 'Communications', active: false },
-    { icon: Clock, label: 'Scraping History', active: false },
-    { icon: Settings, label: 'Settings', active: false },
+    { icon: LayoutDashboard, label: 'Dashboard', view: 'dashboard' },
+    { icon: GitBranch, label: 'Pipeline', view: 'pipeline' },
+    { icon: Users, label: 'All Leads', view: 'leads' },
+    { icon: Target, label: 'Qualified Leads', view: 'qualified', badge: '342' },
+    { icon: TrendingUp, label: 'Analytics', view: 'analytics' },
+    { icon: Activity, label: 'Lead Activity', view: 'activity' },
+    { icon: MessageSquare, label: 'Communications', view: 'communications' },
+    { icon: Clock, label: 'Scraping History', view: 'scraping' },
+    { icon: Settings, label: 'Settings', view: 'settings' },
   ];
+
+  const handleMenuClick = (view: string) => {
+    onViewChange(view);
+    setIsMobileOpen(false); // Close mobile menu when item is clicked
+  };
 
   return (
     <>
@@ -131,13 +139,13 @@ const Sidebar = ({ className }: SidebarProps) => {
                 Lead Management
               </div>
             )}
-            {menuItems.slice(0, 4).map((item, index) => (
-              <a
+            {menuItems.slice(0, 6).map((item, index) => (
+              <button
                 key={index}
-                href="#"
+                onClick={() => handleMenuClick(item.view)}
                 className={cn(
-                  "flex items-center space-x-3 px-3 py-2 sm:py-2.5 rounded-lg text-sm font-medium font-inter transition-all duration-200 group relative",
-                  item.active 
+                  "w-full flex items-center space-x-3 px-3 py-2 sm:py-2.5 rounded-lg text-sm font-medium font-inter transition-all duration-200 group relative",
+                  activeView === item.view 
                     ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-500/30 shadow-lg" 
                     : "text-gray-400 hover:bg-gray-800/50 hover:text-white",
                   (isCollapsed && !isMobileOpen) && "justify-center px-2"
@@ -145,11 +153,11 @@ const Sidebar = ({ className }: SidebarProps) => {
               >
                 <item.icon className={cn(
                   "flex-shrink-0 transition-all duration-200",
-                  item.active ? "w-4 h-4 sm:w-5 sm:h-5 text-blue-400" : "w-4 h-4 group-hover:w-5 group-hover:h-5"
+                  activeView === item.view ? "w-4 h-4 sm:w-5 sm:h-5 text-blue-400" : "w-4 h-4 group-hover:w-5 group-hover:h-5"
                 )} />
                 {(!isCollapsed || isMobileOpen) && (
                   <>
-                    <span className="flex-1 truncate text-sm">{item.label}</span>
+                    <span className="flex-1 truncate text-sm text-left">{item.label}</span>
                     {item.badge && (
                       <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-0.5 font-jetbrains-mono shadow-lg">
                         {item.badge}
@@ -169,7 +177,7 @@ const Sidebar = ({ className }: SidebarProps) => {
                     )}
                   </div>
                 )}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -182,17 +190,20 @@ const Sidebar = ({ className }: SidebarProps) => {
                 Tools & Settings
               </div>
             )}
-            {menuItems.slice(4).map((item, index) => (
-              <a
-                key={index + 4}
-                href="#"
+            {menuItems.slice(6).map((item, index) => (
+              <button
+                key={index + 6}
+                onClick={() => handleMenuClick(item.view)}
                 className={cn(
-                  "flex items-center space-x-3 px-3 py-2 sm:py-2.5 rounded-lg text-sm font-medium font-inter text-gray-400 hover:bg-gray-800/50 hover:text-white transition-all duration-200 group relative",
+                  "w-full flex items-center space-x-3 px-3 py-2 sm:py-2.5 rounded-lg text-sm font-medium font-inter transition-all duration-200 group relative",
+                  activeView === item.view 
+                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-500/30 shadow-lg" 
+                    : "text-gray-400 hover:bg-gray-800/50 hover:text-white",
                   (isCollapsed && !isMobileOpen) && "justify-center px-2"
                 )}
               >
                 <item.icon className="w-4 h-4 flex-shrink-0 group-hover:w-5 group-hover:h-5 transition-all duration-200" />
-                {(!isCollapsed || isMobileOpen) && <span className="truncate text-sm">{item.label}</span>}
+                {(!isCollapsed || isMobileOpen) && <span className="truncate text-sm text-left">{item.label}</span>}
                 
                 {/* Tooltip for collapsed state */}
                 {(isCollapsed && !isMobileOpen) && (
@@ -200,7 +211,7 @@ const Sidebar = ({ className }: SidebarProps) => {
                     {item.label}
                   </div>
                 )}
-              </a>
+              </button>
             ))}
           </div>
         </nav>

@@ -1,10 +1,15 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import { Toaster } from '../components/ui/toaster';
 
 const Index = () => {
+  const [activeView, setActiveView] = useState('dashboard');
+
+  const handleViewChange = (view: string) => {
+    setActiveView(view);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex w-full relative overflow-hidden">
       {/* Enhanced Background Effects */}
@@ -20,14 +25,22 @@ const Index = () => {
       
       {/* Sidebar - Hidden on mobile, shown on larger screens */}
       <div className="hidden lg:block fixed left-0 top-0 h-screen z-20">
-        <Sidebar />
+        <Sidebar 
+          activeView={activeView} 
+          onViewChange={handleViewChange}
+        />
       </div>
       
-      {/* Mobile Sidebar Overlay - Will be implemented later */}
+      {/* Mobile Sidebar - Managed by Sidebar component */}
+      <Sidebar 
+        className="lg:hidden"
+        activeView={activeView} 
+        onViewChange={handleViewChange}
+      />
       
       {/* Main Content - Responsive margins */}
       <div className="flex-1 transition-all duration-300 ease-out lg:ml-64 w-full">
-        <Dashboard />
+        <Dashboard activeView={activeView} />
       </div>
       
       <Toaster />
