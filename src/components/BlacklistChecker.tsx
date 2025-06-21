@@ -21,40 +21,46 @@ const BlacklistChecker = () => {
   };
 
   return (
-    <Card className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 hover:border-gray-600/50 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl h-full flex flex-col group">
-      <CardHeader className="flex-shrink-0 p-4 sm:p-6">
-        <CardTitle className="text-sm font-medium text-gray-400 font-dm-sans">Blacklist Checker</CardTitle>
+    <Card className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-xl border border-gray-700/40 hover:border-gray-600/60 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl h-full flex flex-col group overflow-hidden relative">
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+      
+      <CardHeader className="flex-shrink-0 p-4 sm:p-6 relative z-10">
+        <CardTitle className="text-sm font-medium text-gray-300 font-dm-sans flex items-center gap-2">
+          <Search className="w-4 h-4 text-orange-400" />
+          Blacklist Checker
+        </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col justify-between space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-          <div className="p-2 sm:p-3 rounded-lg bg-gray-800/50">
-            <p className="text-xs text-gray-400 mb-1">Checked</p>
-            <p className="text-sm sm:text-lg font-bold text-white">{blacklistStats.totalChecked}</p>
+      <CardContent className="flex-1 flex flex-col justify-between space-y-4 p-4 sm:p-6 pt-0 relative z-10">
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="p-3 rounded-xl bg-gray-800/60 backdrop-blur-sm border border-gray-700/30 hover:bg-gray-800/80 transition-all duration-200">
+            <p className="text-xs text-gray-400 mb-2 font-medium">Checked</p>
+            <p className="text-lg font-bold text-white font-jetbrains-mono">{blacklistStats.totalChecked.toLocaleString()}</p>
           </div>
-          <div className="p-2 sm:p-3 rounded-lg bg-red-500/20 border border-red-500/30">
-            <p className="text-xs text-red-400 mb-1">Blacklisted</p>
-            <p className="text-sm sm:text-lg font-bold text-red-400">{blacklistStats.blacklisted}</p>
+          <div className="p-3 rounded-xl bg-gradient-to-br from-red-500/20 to-red-600/20 border border-red-500/40 backdrop-blur-sm hover:from-red-500/30 hover:to-red-600/30 transition-all duration-200">
+            <p className="text-xs text-red-300 mb-2 font-medium">Blacklisted</p>
+            <p className="text-lg font-bold text-red-400 font-jetbrains-mono">{blacklistStats.blacklisted}</p>
           </div>
-          <div className="p-2 sm:p-3 rounded-lg bg-yellow-500/20 border border-yellow-500/30">
-            <p className="text-xs text-yellow-400 mb-1">Suspicious</p>
-            <p className="text-sm sm:text-lg font-bold text-yellow-400">{blacklistStats.suspicious}</p>
+          <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/40 backdrop-blur-sm hover:from-yellow-500/30 hover:to-amber-500/30 transition-all duration-200">
+            <p className="text-xs text-yellow-300 mb-2 font-medium">Suspicious</p>
+            <p className="text-lg font-bold text-yellow-400 font-jetbrains-mono">{blacklistStats.suspicious}</p>
           </div>
         </div>
         
-        <div className="space-y-2 sm:space-y-3">
+        <div className="space-y-3">
           <Button 
             onClick={handleQuickCheck}
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-8 sm:h-10 text-xs sm:text-sm"
+            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 h-10 text-sm font-medium rounded-xl border-0 group"
             size="sm"
           >
-            <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+            <Search className="w-4 h-4 mr-2 group-hover:animate-pulse" />
             Quick Check ({checkCount})
           </Button>
           
           {blacklistStats.blacklisted > 0 && (
-            <div className="flex items-center gap-2 p-2 sm:p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400">
-              <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <span className="text-xs">
+            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/40 rounded-xl text-red-300 backdrop-blur-sm">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 animate-pulse" />
+              <span className="text-xs font-medium">
                 {blacklistStats.blacklisted} leads require attention
               </span>
             </div>
