@@ -102,18 +102,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
+      // Convert phone to number if provided, otherwise use empty string
+      const phoneNumber = phone && phone.trim() ? parseInt(phone.replace(/\D/g, ''), 10) : '';
+
+      // Create payload matching exact Supabase field mapping
+      const payload = {
+        email_address: email,
+        password: password,
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phoneNumber
+      };
+
+      console.log('Signup payload:', payload);
+
       const response = await fetch('https://twosteps.app.n8n.cloud/webhook/236f4d2c-7eb7-4f01-80cd-f4bb24703944', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          email_address: email,
-          password: password,
-          first_name: firstName,
-          last_name: lastName,
-          phone_number: phone || ''
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {

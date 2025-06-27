@@ -35,13 +35,13 @@ const Login = () => {
     password: ''
   });
 
-  // Signup form state
+  // Updated signup form state to match Supabase fields
   const [signupData, setSignupData] = useState({
-    name: '',
-    email: '',
+    firstName: '',
+    lastName: '',
+    email_address: '',
     password: '',
-    company: '',
-    phone: ''
+    phone_number: ''
   });
 
   // Forgot password state
@@ -77,7 +77,13 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const success = await signup(signupData.name, signupData.email, signupData.password, signupData.phone);
+      // Create the full name for the existing signup function
+      const fullName = `${signupData.firstName} ${signupData.lastName}`.trim();
+      
+      // Convert phone_number to number if provided
+      const phoneNumber = signupData.phone_number ? signupData.phone_number : '';
+      
+      const success = await signup(fullName, signupData.email_address, signupData.password, phoneNumber);
       
       if (success) {
         toast({
@@ -86,7 +92,7 @@ const Login = () => {
         });
         
         setIsSignupOpen(false);
-        setSignupData({ name: '', email: '', password: '', company: '', phone: '' });
+        setSignupData({ firstName: '', lastName: '', email_address: '', password: '', phone_number: '' });
       } else {
         toast({
           title: "Signup Failed",
@@ -279,17 +285,31 @@ const Login = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name" className="text-gray-300">Full Name</Label>
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="Your full name"
-                      value={signupData.name}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, name: e.target.value }))}
-                      className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-firstName" className="text-gray-300">First Name</Label>
+                      <Input
+                        id="signup-firstName"
+                        type="text"
+                        placeholder="First name"
+                        value={signupData.firstName}
+                        onChange={(e) => setSignupData(prev => ({ ...prev, firstName: e.target.value }))}
+                        className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-lastName" className="text-gray-300">Last Name</Label>
+                      <Input
+                        id="signup-lastName"
+                        type="text"
+                        placeholder="Last name"
+                        value={signupData.lastName}
+                        onChange={(e) => setSignupData(prev => ({ ...prev, lastName: e.target.value }))}
+                        className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                        required
+                      />
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
@@ -298,33 +318,21 @@ const Login = () => {
                       id="signup-email"
                       type="email"
                       placeholder="name@example.com"
-                      value={signupData.email}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
+                      value={signupData.email_address}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, email_address: e.target.value }))}
                       className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-company" className="text-gray-300">Company</Label>
-                    <Input
-                      id="signup-company"
-                      type="text"
-                      placeholder="Your company name"
-                      value={signupData.company}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, company: e.target.value }))}
-                      className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-phone" className="text-gray-300">Phone</Label>
+                    <Label htmlFor="signup-phone" className="text-gray-300">Phone Number</Label>
                     <Input
                       id="signup-phone"
                       type="tel"
                       placeholder="Your phone number"
-                      value={signupData.phone}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, phone: e.target.value }))}
+                      value={signupData.phone_number}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, phone_number: e.target.value }))}
                       className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
                   </div>
