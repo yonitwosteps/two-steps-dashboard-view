@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, LogIn, UserPlus, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,14 +8,25 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { SecureHttpClient } from '@/utils/httpClient';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const { login, signup, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
   const { toast } = useToast();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -27,7 +38,9 @@ const Login = () => {
   const [signupData, setSignupData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    company: '',
+    phone: ''
   });
 
   // Forgot password state
@@ -38,17 +51,21 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await SecureHttpClient.post(
-        'https://twosteps.app.n8n.cloud/webhook/167477c9-c4a2-47a3-8823-f5067705b880',
-        loginData
-      );
+      const success = await login(loginData.email, loginData.password);
       
-      toast({
-        title: "Login Successful",
-        description: "Welcome back! Redirecting to dashboard...",
-      });
-      
-      // Here you would typically handle successful login (redirect, store token, etc.)
+      if (success) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back! Redirecting to dashboard...",
+        });
+        navigate('/', { replace: true });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password. Please try again.",
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
       toast({
@@ -66,18 +83,23 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await SecureHttpClient.post(
-        'https://twosteps.app.n8n.cloud/webhook/236f4d2c-7eb7-4f01-80cd-f4bb24703944',
-        signupData
-      );
+      const success = await signup(signupData.name, signupData.email, signupData.password);
       
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully! Please login.",
-      });
-      
-      setIsSignupOpen(false);
-      setSignupData({ name: '', email: '', password: '' });
+      if (success) {
+        toast({
+          title: "Account Created",
+          description: "Your account has been created successfully! Please login.",
+        });
+        
+        setIsSignupOpen(false);
+        setSignupData({ name: '', email: '', password: '', company: '', phone: '' });
+      } else {
+        toast({
+          title: "Signup Failed",
+          description: "Failed to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
       toast({
@@ -252,7 +274,7 @@ const Login = () => {
                   Sign up
                 </button>
               </DialogTrigger>
-              <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
+              <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white max-w-md">
                 <DialogHeader>
                   <DialogTitle className="text-white font-dm-sans">Create Account</DialogTitle>
                   <DialogDescription className="text-gray-400">
@@ -283,6 +305,30 @@ const Login = () => {
                       onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
                       className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-company" className="text-gray-300">Company</Label>
+                    <Input
+                      id="signup-company"
+                      type="text"
+                      placeholder="Your company name"
+                      value={signupData.company}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, company: e.target.value }))}
+                      className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-phone" className="text-gray-300">Phone</Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      placeholder="Your phone number"
+                      value={signupData.phone}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, phone: e.target.value }))}
+                      className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
                   </div>
                   

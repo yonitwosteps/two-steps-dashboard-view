@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -13,9 +14,11 @@ import {
   ChevronRight,
   Menu,
   X,
-  GitBranch
+  GitBranch,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SidebarProps {
   className?: string;
@@ -24,6 +27,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
+  const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -42,6 +46,11 @@ const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
   const handleMenuClick = (view: string) => {
     onViewChange(view);
     setIsMobileOpen(false); // Close mobile menu when item is clicked
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileOpen(false);
   };
 
   return (
@@ -221,13 +230,19 @@ const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
           <div className="p-3 sm:p-4 border-t border-gray-800/50 animate-fade-in">
             <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200 cursor-pointer group">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-dm-sans font-medium text-xs sm:text-sm shadow-lg">
-                U
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-white truncate">Admin User</p>
-                <p className="text-xs text-gray-400 truncate">admin@company.com</p>
+                <p className="text-xs sm:text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
+                <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
               </div>
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full shadow-lg"></div>
+              <button
+                onClick={handleLogout}
+                className="p-1 rounded-md text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all duration-200"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         )}
