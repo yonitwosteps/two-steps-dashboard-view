@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, LogIn, UserPlus, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ const Login = () => {
   const { login, signup, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,16 +125,18 @@ const Login = () => {
       );
       
       toast({
-        title: "Password Reset Sent",
-        description: "If an account with that email exists, you'll receive password reset instructions.",
+        title: "Password Reset Email Sent",
+        description: "Check your email for password reset instructions. Don't forget to check your spam folder.",
       });
       
+      // Clear form and close dialog
       setForgotPasswordEmail('');
+      setIsForgotPasswordOpen(false);
       
     } catch (error) {
       toast({
-        title: "Reset Failed",
-        description: error instanceof Error ? error.message : "An error occurred while sending reset email",
+        title: "Failed to Send Reset Email",
+        description: error instanceof Error ? error.message : "Please try again or contact support if the problem persists",
         variant: "destructive",
       });
     } finally {
@@ -211,7 +213,7 @@ const Login = () => {
 
               {/* Forgot Password Link */}
               <div className="flex justify-end">
-                <Dialog>
+                <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
                   <DialogTrigger asChild>
                     <button
                       type="button"
@@ -243,7 +245,7 @@ const Login = () => {
                       <Button
                         type="submit"
                         disabled={isForgotPasswordLoading}
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300"
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Lock className="w-4 h-4 mr-2" />
                         {isForgotPasswordLoading ? 'Sending...' : 'Send Reset Link'}
