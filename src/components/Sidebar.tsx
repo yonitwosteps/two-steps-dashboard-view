@@ -15,10 +15,19 @@ import {
   Menu,
   X,
   GitBranch,
-  LogOut
+  LogOut,
+  User,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface SidebarProps {
   className?: string;
@@ -52,6 +61,14 @@ const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
     logout();
     setIsMobileOpen(false);
   };
+
+  const handleSettingsClick = () => {
+    onViewChange('settings');
+    setIsMobileOpen(false);
+  };
+
+  // Display user's first name or fallback to name
+  const displayName = user?.firstName || user?.name || 'User';
 
   return (
     <>
@@ -225,25 +242,44 @@ const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
           </div>
         </nav>
 
-        {/* Enhanced User Section */}
+        {/* Enhanced User Section with Dropdown */}
         {(!isCollapsed || isMobileOpen) && (
           <div className="p-3 sm:p-4 border-t border-gray-800/50 animate-fade-in">
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200 cursor-pointer group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-dm-sans font-medium text-xs sm:text-sm shadow-lg">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
-                <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="p-1 rounded-md text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all duration-200"
-                title="Logout"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200 cursor-pointer group">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-dm-sans font-medium text-xs sm:text-sm shadow-lg">
+                    {displayName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-white truncate">{displayName}</p>
+                    <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                className="w-56 bg-gray-800 border-gray-700 text-white" 
+                align="end" 
+                sideOffset={5}
               >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
+                <DropdownMenuItem 
+                  onClick={handleSettingsClick}
+                  className="cursor-pointer hover:bg-gray-700 focus:bg-gray-700"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="cursor-pointer hover:bg-gray-700 focus:bg-gray-700 text-red-400 hover:text-red-300"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

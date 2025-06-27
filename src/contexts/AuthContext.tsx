@@ -5,13 +5,14 @@ interface User {
   id: string;
   name: string;
   email: string;
+  firstName?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (name: string, email: string, password: string, phone?: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch('https://twosteps.app.n8n.cloud/webhook/167477c9-c4a2-47a3-8823-f5067705b880', {
         method: 'POST',
@@ -57,36 +58,62 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify({ email, password }),
       });
 
-      const result = await response.text();
+      const responseText = await response.text();
       
-      if (result === 'true') {
-        // Create user object (in real app, this would come from the server)
+      // Try to parse as JSON first
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        // If not JSON, treat as string
+        result = responseText;
+      }
+      
+      // Handle both JSON response format and string response format
+      const isSuccess = result === 'true' || result?.result === 'true' || result?.result === true;
+      
+      if (isSuccess) {
+        // Extract first name from response if available, otherwise from email
+        const firstName = result?.first_name || result?.firstName || email.split('@')[0];
+        
         const userData: User = {
           id: Date.now().toString(),
-          name: email.split('@')[0], // Extract name from email as fallback
+          name: firstName,
           email: email,
+          firstName: firstName,
         };
         
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-        return true;
+        return { success: true };
       }
       
-      return false;
+      return { success: false, error: 'Incorrect email or password' };
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      return { success: false, error: 'Network error. Please try again.' };
     }
   };
 
-  const signup = async (name: string, email: string, password: string): Promise<boolean> => {
+  const signup = async (name: string, email: string, password: string, phone?: string): Promise<boolean> => {
     try {
+      // Split name into first and last name
+      const nameParts = name.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
       const response = await fetch('https://twosteps.app.n8n.cloud/webhook/236f4d2c-7eb7-4f01-80cd-f4bb24703944', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ 
+          email_address: email,
+          password: password,
+          first_name: firstName,
+          last_name: lastName,
+          phone_number: phone || ''
+        }),
       });
 
       if (response.ok) {

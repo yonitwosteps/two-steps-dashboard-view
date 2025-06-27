@@ -19,6 +19,7 @@ const Login = () => {
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const { toast } = useToast();
 
   // Redirect if already authenticated
@@ -49,30 +50,23 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError('');
 
     try {
-      const success = await login(loginData.email, loginData.password);
+      const result = await login(loginData.email, loginData.password);
       
-      if (success) {
+      if (result.success) {
         toast({
           title: "Login Successful",
           description: "Welcome back! Redirecting to dashboard...",
         });
         navigate('/', { replace: true });
       } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        });
+        setLoginError(result.error || 'Login failed');
       }
       
     } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "An error occurred during login",
-        variant: "destructive",
-      });
+      setLoginError('An error occurred during login');
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +77,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const success = await signup(signupData.name, signupData.email, signupData.password);
+      const success = await signup(signupData.name, signupData.email, signupData.password, signupData.phone);
       
       if (success) {
         toast({
@@ -204,6 +198,9 @@ const Login = () => {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {loginError && (
+                  <p className="text-red-400 text-sm mt-1">{loginError}</p>
+                )}
               </div>
 
               {/* Forgot Password Link */}
