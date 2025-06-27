@@ -16,7 +16,11 @@ import {
   Phone,
   Mail,
   Eye,
-  Edit
+  Edit,
+  Search,
+  TrendingUp,
+  Target,
+  Zap
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -65,7 +69,7 @@ const PipelineBoard = () => {
   const [filterValue, setFilterValue] = useState('');
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
 
-  // Mock data - replace with real data integration
+  // Enhanced mock data with better structure
   const [pipelines, setPipelines] = useState<Pipeline[]>([
     {
       id: 'sales',
@@ -75,7 +79,7 @@ const PipelineBoard = () => {
           id: 'prospecting',
           name: 'Prospecting',
           probability: 10,
-          color: 'bg-gray-500',
+          color: 'bg-slate-500',
           deals: [
             {
               id: '1',
@@ -133,7 +137,7 @@ const PipelineBoard = () => {
           id: 'proposal',
           name: 'Proposal',
           probability: 50,
-          color: 'bg-yellow-500',
+          color: 'bg-amber-500',
           deals: [
             {
               id: '4',
@@ -191,7 +195,7 @@ const PipelineBoard = () => {
           id: 'closed-won',
           name: 'Closed Won',
           probability: 100,
-          color: 'bg-green-500',
+          color: 'bg-emerald-500',
           deals: [
             {
               id: '7',
@@ -220,7 +224,6 @@ const PipelineBoard = () => {
 
     const { source, destination } = result;
     
-    // If dropped in the same position, do nothing
     if (source.droppableId === destination.droppableId && source.index === destination.index) {
       return;
     }
@@ -234,14 +237,9 @@ const PipelineBoard = () => {
 
       if (!sourceStage || !destStage) return pipeline;
 
-      // Remove deal from source stage
       const [movedDeal] = sourceStage.deals.splice(source.index, 1);
-      
-      // Update deal stage
       movedDeal.stage = destination.droppableId;
       movedDeal.probability = destStage.probability;
-
-      // Add deal to destination stage
       destStage.deals.splice(destination.index, 0, movedDeal);
 
       return { ...pipeline, stages: updatedStages };
@@ -266,51 +264,68 @@ const PipelineBoard = () => {
   if (!currentPipeline) return <div>Pipeline not found</div>;
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
+    <div className="h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 sm:p-6">
+      {/* Enhanced Header with better spacing and visual hierarchy */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <PipelineSelector 
             pipelines={pipelines}
             selectedPipeline={selectedPipeline}
             onPipelineChange={setSelectedPipeline}
           />
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Filter deals..."
-              value={filterValue}
-              onChange={(e) => setFilterValue(e.target.value)}
-              className="w-64 bg-gray-800/50 border-gray-700"
-            />
-            <Button variant="outline" size="sm" className="border-gray-700">
+          
+          {/* Enhanced Search and Filter */}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search deals..."
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
+                className="pl-10 w-64 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
+              />
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border-gray-700 bg-gray-800/50 hover:bg-gray-700/80 text-gray-300 hover:text-white"
+            >
               <Filter className="h-4 w-4" />
             </Button>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="border-gray-700">
+        {/* Enhanced Action Buttons */}
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-gray-700 bg-gray-800/50 hover:bg-gray-700/80 text-gray-300 hover:text-white"
+          >
             <Settings className="h-4 w-4 mr-2" />
             Pipeline Settings
           </Button>
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+          <Button 
+            size="sm" 
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Deal
           </Button>
         </div>
       </div>
 
-      {/* Pipeline Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-gray-900/50 border-gray-700">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-blue-400" />
+      {/* Enhanced Pipeline Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-blue-600/30 rounded-xl flex items-center justify-center">
+                <DollarSign className="h-6 w-6 text-blue-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Total Pipeline Value</p>
-                <p className="text-xl font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-400 mb-1">Total Pipeline Value</p>
+                <p className="text-2xl font-bold text-white">
                   ${currentPipeline.stages.reduce((sum, stage) => sum + getTotalValue(stage.deals), 0).toLocaleString()}
                 </p>
               </div>
@@ -318,15 +333,15 @@ const PipelineBoard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900/50 border-gray-700">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-green-400" />
+        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 rounded-xl flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-emerald-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Weighted Pipeline</p>
-                <p className="text-xl font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-400 mb-1">Weighted Pipeline</p>
+                <p className="text-2xl font-bold text-white">
                   ${currentPipeline.stages.reduce((sum, stage) => sum + getWeightedValue(stage.deals, stage.probability), 0).toLocaleString()}
                 </p>
               </div>
@@ -334,15 +349,15 @@ const PipelineBoard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900/50 border-gray-700">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-purple-400" />
+        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/30 rounded-xl flex items-center justify-center">
+                <Target className="h-6 w-6 text-purple-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Total Deals</p>
-                <p className="text-xl font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-400 mb-1">Total Deals</p>
+                <p className="text-2xl font-bold text-white">
                   {currentPipeline.stages.reduce((sum, stage) => sum + stage.deals.length, 0)}
                 </p>
               </div>
@@ -350,15 +365,15 @@ const PipelineBoard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900/50 border-gray-700">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-yellow-400" />
+        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-amber-600/30 rounded-xl flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-amber-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Avg. Deal Age</p>
-                <p className="text-xl font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-400 mb-1">Avg. Deal Age</p>
+                <p className="text-2xl font-bold text-white">
                   {Math.round(currentPipeline.stages.reduce((sum, stage) => 
                     sum + stage.deals.reduce((dealSum, deal) => dealSum + deal.age, 0), 0
                   ) / currentPipeline.stages.reduce((sum, stage) => sum + stage.deals.length, 0) || 0)} days
@@ -369,60 +384,76 @@ const PipelineBoard = () => {
         </Card>
       </div>
 
-      {/* Pipeline Board */}
+      {/* Enhanced Pipeline Board */}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-6 overflow-x-auto pb-6">
+        <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
           {currentPipeline.stages.map(stage => (
-            <div key={stage.id} className="flex-shrink-0 w-80">
-              <Card className="bg-gray-900/50 border-gray-700 h-full">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
+            <div key={stage.id} className="flex-shrink-0 w-80 animate-fade-in">
+              <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 h-full shadow-xl hover:shadow-2xl transition-all duration-300">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${stage.color}`} />
-                      <CardTitle className="text-white text-sm font-medium">
+                      <div className={`w-4 h-4 rounded-full ${stage.color} shadow-lg`} />
+                      <CardTitle className="text-white text-base font-semibold">
                         {stage.name}
                       </CardTitle>
-                      <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-gray-800/80 text-gray-300 px-2 py-1 text-xs font-medium"
+                      >
                         {stage.deals.length}
                       </Badge>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700/80"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700">
+                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700 shadow-xl">
+                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700 focus:bg-gray-700">
                           <Plus className="h-4 w-4 mr-2" />
                           Add Deal
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700">
+                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700 focus:bg-gray-700">
                           <Settings className="h-4 w-4 mr-2" />
                           Stage Settings
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  <div className="text-xs text-gray-400 space-y-1">
-                    <div className="flex justify-between">
-                      <span>Total Value:</span>
-                      <span className="font-medium">${getTotalValue(stage.deals).toLocaleString()}</span>
+                  
+                  {/* Enhanced Stage Stats */}
+                  <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-400">Total Value:</span>
+                      <span className="font-semibold text-gray-200">${getTotalValue(stage.deals).toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Weighted:</span>
-                      <span className="font-medium">${getWeightedValue(stage.deals, stage.probability).toLocaleString()}</span>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-400">Weighted:</span>
+                      <span className="font-semibold text-gray-200">${getWeightedValue(stage.deals, stage.probability).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-400">Win Rate:</span>
+                      <span className="font-semibold text-gray-200">{stage.probability}%</span>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="p-3 pt-0">
+                
+                <CardContent className="p-4 pt-0">
                   <Droppable droppableId={stage.id}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`space-y-3 min-h-[200px] rounded-lg transition-colors ${
-                          snapshot.isDraggingOver ? 'bg-gray-800/50' : ''
+                        className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-all duration-300 ${
+                          snapshot.isDraggingOver 
+                            ? 'bg-gray-800/60 border-2 border-dashed border-gray-600' 
+                            : 'bg-transparent'
                         }`}
                       >
                         {stage.deals.map((deal, index) => (
@@ -432,7 +463,11 @@ const PipelineBoard = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`${snapshot.isDragging ? 'rotate-2 scale-105' : ''}`}
+                                className={`transition-all duration-200 ${
+                                  snapshot.isDragging 
+                                    ? 'rotate-3 scale-105 shadow-2xl z-50' 
+                                    : 'hover:scale-102'
+                                }`}
                               >
                                 <DealCard 
                                   deal={deal} 
@@ -444,6 +479,20 @@ const PipelineBoard = () => {
                           </Draggable>
                         ))}
                         {provided.placeholder}
+                        
+                        {/* Add Deal Button in Empty State */}
+                        {stage.deals.length === 0 && (
+                          <div className="flex items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-600 transition-colors">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Deal
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </Droppable>
@@ -454,13 +503,12 @@ const PipelineBoard = () => {
         </div>
       </DragDropContext>
 
-      {/* Deal Quick View */}
+      {/* Deal Quick View Modal */}
       <DealQuickView
         deal={selectedDeal}
         isOpen={isQuickViewOpen}
         onClose={() => setIsQuickViewOpen(false)}
         onSave={(updatedDeal) => {
-          // Update deal in pipelines
           const updatedPipelines = pipelines.map(pipeline => ({
             ...pipeline,
             stages: pipeline.stages.map(stage => ({
