@@ -1,0 +1,329 @@
+
+import React, { useState } from 'react';
+import { Eye, EyeOff, LogIn, UserPlus, Lock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { SecureHttpClient } from '@/utils/httpClient';
+
+const Login = () => {
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
+  const { toast } = useToast();
+
+  // Login form state
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: ''
+  });
+
+  // Signup form state
+  const [signupData, setSignupData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
+
+  // Forgot password state
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await SecureHttpClient.post(
+        'https://twosteps.app.n8n.cloud/webhook/167477c9-c4a2-47a3-8823-f5067705b880',
+        loginData
+      );
+      
+      toast({
+        title: "Login Successful",
+        description: "Welcome back! Redirecting to dashboard...",
+      });
+      
+      // Here you would typically handle successful login (redirect, store token, etc.)
+      
+    } catch (error) {
+      toast({
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "An error occurred during login",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await SecureHttpClient.post(
+        'https://twosteps.app.n8n.cloud/webhook/236f4d2c-7eb7-4f01-80cd-f4bb24703944',
+        signupData
+      );
+      
+      toast({
+        title: "Account Created",
+        description: "Your account has been created successfully! Please login.",
+      });
+      
+      setIsSignupOpen(false);
+      setSignupData({ name: '', email: '', password: '' });
+      
+    } catch (error) {
+      toast({
+        title: "Signup Failed",
+        description: error instanceof Error ? error.message : "An error occurred during signup",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotPasswordEmail) return;
+    
+    setIsForgotPasswordLoading(true);
+
+    try {
+      await SecureHttpClient.post(
+        'https://twosteps.app.n8n.cloud/webhook/71f232d5-b882-439b-8cb4-0341585e48f9',
+        { email: forgotPasswordEmail }
+      );
+      
+      toast({
+        title: "Password Reset Sent",
+        description: "If an account with that email exists, you'll receive password reset instructions.",
+      });
+      
+      setForgotPasswordEmail('');
+      
+    } catch (error) {
+      toast({
+        title: "Reset Failed",
+        description: error instanceof Error ? error.message : "An error occurred while sending reset email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsForgotPasswordLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Enhanced Background Effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div className="absolute top-10 right-4 lg:right-10 w-48 h-48 lg:w-96 lg:h-96 bg-gradient-to-br from-blue-500/8 via-purple-500/4 to-transparent rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 left-4 lg:left-10 w-40 h-40 lg:w-80 lg:h-80 bg-gradient-to-tr from-purple-500/6 via-blue-500/3 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 lg:w-64 lg:h-64 bg-gradient-to-r from-blue-500/8 to-purple-500/8 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
+      <div className="w-full max-w-md space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl lg:text-4xl font-bold font-dm-sans bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent">
+            Two Steps
+          </h1>
+          <p className="text-gray-400 font-inter">Sign in to your account</p>
+        </div>
+
+        {/* Login Card */}
+        <Card className="bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 shadow-xl">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-white font-dm-sans">Welcome back</CardTitle>
+            <CardDescription className="text-gray-400">
+              Enter your credentials to access your dashboard
+            </CardDescription>
+          </CardHeader>
+          
+          <form onSubmit={handleLogin}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-300">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={loginData.email}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                  className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                    className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20 pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Forgot Password Link */}
+              <div className="flex justify-end">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      Forgot Password?
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
+                    <DialogHeader>
+                      <DialogTitle className="text-white font-dm-sans">Reset Password</DialogTitle>
+                      <DialogDescription className="text-gray-400">
+                        Enter your email address and we'll send you a link to reset your password.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="forgot-email" className="text-gray-300">Email</Label>
+                        <Input
+                          id="forgot-email"
+                          type="email"
+                          placeholder="name@example.com"
+                          value={forgotPasswordEmail}
+                          onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                          className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                          required
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={isForgotPasswordLoading}
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300"
+                      >
+                        <Lock className="w-4 h-4 mr-2" />
+                        {isForgotPasswordLoading ? 'Sending...' : 'Send Reset Link'}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+            
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium font-dm-sans transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 border-0 rounded-xl py-3"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+
+        {/* Signup Section */}
+        <div className="text-center">
+          <p className="text-gray-400 text-sm">
+            Don't have an account?{' '}
+            <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
+              <DialogTrigger asChild>
+                <button className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                  Sign up
+                </button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
+                <DialogHeader>
+                  <DialogTitle className="text-white font-dm-sans">Create Account</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Join Two Steps to start managing your leads effectively.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-name" className="text-gray-300">Full Name</Label>
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      placeholder="Your full name"
+                      value={signupData.name}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, name: e.target.value }))}
+                      className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email" className="text-gray-300">Email</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="name@example.com"
+                      value={signupData.email}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
+                      className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password" className="text-gray-300">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showSignupPassword ? "text" : "password"}
+                        placeholder="Create a password"
+                        value={signupData.password}
+                        onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
+                        className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20 pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                      >
+                        {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium font-dm-sans transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 border-0 rounded-xl py-3"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
