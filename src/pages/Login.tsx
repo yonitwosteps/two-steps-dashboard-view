@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, LogIn, UserPlus, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,7 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent any event bubbling
     setIsLoading(true);
     setLoginError('');
 
@@ -115,6 +117,7 @@ const Login = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling to parent forms
     
     // Enhanced form validation
     if (!forgotPasswordEmail.trim()) {
@@ -240,6 +243,10 @@ const Login = () => {
                   <DialogTrigger asChild>
                     <button
                       type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation(); // Prevent triggering login form
+                      }}
                       className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
                       aria-label="Open forgot password dialog"
                     >
@@ -281,6 +288,10 @@ const Login = () => {
                       <Button
                         type="submit"
                         disabled={isForgotPasswordLoading || !forgotPasswordEmail.trim()}
+                        onClick={(e) => {
+                          // Ensure this button only handles forgot password logic
+                          e.stopPropagation();
+                        }}
                         className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Send password reset email"
                       >
@@ -297,6 +308,10 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
+                onClick={(e) => {
+                  // Ensure this button only handles login logic
+                  e.stopPropagation();
+                }}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium font-dm-sans transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 border-0 rounded-xl py-3"
                 aria-label="Sign in to your account"
               >
