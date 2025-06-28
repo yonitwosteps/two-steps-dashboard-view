@@ -321,7 +321,7 @@ const Login = () => {
                 aria-label="Send password reset email"
               >
                 <Lock className="w-4 h-4 mr-2" />
-                {isForgotPasswordLoading ? 'Sending Reset Email...' : 'Send Reset Link'}
+                {isForgotPasswordLoading ? 'Sending Retrieval Email...' : 'Send Retrieval Email'}
               </Button>
             </form>
           </DialogContent>
