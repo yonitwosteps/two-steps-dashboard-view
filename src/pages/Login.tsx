@@ -20,6 +20,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [forgotPasswordError, setForgotPasswordError] = useState('');
   const { toast } = useToast();
 
   // Redirect if already authenticated
@@ -114,33 +115,54 @@ const Login = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotPasswordEmail) return;
+    
+    // Enhanced form validation
+    if (!forgotPasswordEmail.trim()) {
+      setForgotPasswordError('Please enter your email address');
+      return;
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(forgotPasswordEmail.trim())) {
+      setForgotPasswordError('Please enter a valid email address');
+      return;
+    }
     
     setIsForgotPasswordLoading(true);
+    setForgotPasswordError('');
 
     try {
       await SecureHttpClient.post(
         'https://twosteps.app.n8n.cloud/webhook/71f232d5-b882-439b-8cb4-0341585e48f9',
-        { email: forgotPasswordEmail }
+        { email: forgotPasswordEmail.trim() }
       );
       
       toast({
         title: "Password Reset Email Sent",
-        description: "Check your email for password reset instructions. Don't forget to check your spam folder.",
+        description: `We've sent password reset instructions to ${forgotPasswordEmail}. Please check your email (including spam folder) and follow the link to reset your password.`,
       });
       
-      // Clear form and close dialog
+      // Clear form and close dialog on success
       setForgotPasswordEmail('');
+      setForgotPasswordError('');
       setIsForgotPasswordOpen(false);
       
     } catch (error) {
-      toast({
-        title: "Failed to Send Reset Email",
-        description: error instanceof Error ? error.message : "Please try again or contact support if the problem persists",
-        variant: "destructive",
-      });
+      const errorMessage = error instanceof Error ? error.message : "Network error occurred";
+      setForgotPasswordError(`Failed to send reset email: ${errorMessage}. Please try again or contact support if the problem persists.`);
     } finally {
       setIsForgotPasswordLoading(false);
+    }
+  };
+
+  // Handle dialog close to reset form state
+  const handleForgotPasswordDialogChange = (open: boolean) => {
+    setIsForgotPasswordOpen(open);
+    if (!open) {
+      // Reset form when dialog closes
+      setForgotPasswordEmail('');
+      setForgotPasswordError('');
     }
   };
 
@@ -202,22 +224,24 @@ const Login = () => {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {loginError && (
-                  <p className="text-red-400 text-sm mt-1">{loginError}</p>
+                  <p className="text-red-400 text-sm mt-1" role="alert">{loginError}</p>
                 )}
               </div>
 
               {/* Forgot Password Link */}
               <div className="flex justify-end">
-                <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+                <Dialog open={isForgotPasswordOpen} onOpenChange={handleForgotPasswordDialogChange}>
                   <DialogTrigger asChild>
                     <button
                       type="button"
                       className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                      aria-label="Open forgot password dialog"
                     >
                       Forgot Password?
                     </button>
@@ -237,18 +261,31 @@ const Login = () => {
                           type="email"
                           placeholder="name@example.com"
                           value={forgotPasswordEmail}
-                          onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                          onChange={(e) => {
+                            setForgotPasswordEmail(e.target.value);
+                            // Clear error when user starts typing
+                            if (forgotPasswordError) {
+                              setForgotPasswordError('');
+                            }
+                          }}
                           className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                           required
+                          aria-describedby={forgotPasswordError ? "forgot-password-error" : undefined}
                         />
+                        {forgotPasswordError && (
+                          <p id="forgot-password-error" className="text-red-400 text-sm mt-1" role="alert">
+                            {forgotPasswordError}
+                          </p>
+                        )}
                       </div>
                       <Button
                         type="submit"
-                        disabled={isForgotPasswordLoading}
+                        disabled={isForgotPasswordLoading || !forgotPasswordEmail.trim()}
                         className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Send password reset email"
                       >
                         <Lock className="w-4 h-4 mr-2" />
-                        {isForgotPasswordLoading ? 'Sending...' : 'Send Reset Link'}
+                        {isForgotPasswordLoading ? 'Sending Reset Email...' : 'Send Reset Link'}
                       </Button>
                     </form>
                   </DialogContent>
@@ -261,6 +298,7 @@ const Login = () => {
                 type="submit"
                 disabled={isLoading}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium font-dm-sans transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 border-0 rounded-xl py-3"
+                aria-label="Sign in to your account"
               >
                 <LogIn className="w-4 h-4 mr-2" />
                 {isLoading ? 'Signing in...' : 'Sign In'}
@@ -355,6 +393,7 @@ const Login = () => {
                         type="button"
                         onClick={() => setShowSignupPassword(!showSignupPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                        aria-label={showSignupPassword ? "Hide password" : "Show password"}
                       >
                         {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
