@@ -159,8 +159,16 @@ const Login = () => {
     }
   };
 
+  const handleForgotPasswordClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Forgot password clicked, current state:', isForgotPasswordOpen);
+    setIsForgotPasswordOpen(true);
+  };
+
   // Handle dialog close to reset form state
   const handleForgotPasswordDialogChange = (open: boolean) => {
+    console.log('Dialog state changing to:', open);
     setIsForgotPasswordOpen(open);
     if (!open) {
       // Reset form when dialog closes
@@ -239,68 +247,14 @@ const Login = () => {
 
               {/* Forgot Password Link */}
               <div className="flex justify-end">
-                <Dialog open={isForgotPasswordOpen} onOpenChange={handleForgotPasswordDialogChange}>
-                  <DialogTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation(); // Prevent triggering login form
-                      }}
-                      className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-                      aria-label="Open forgot password dialog"
-                    >
-                      Forgot Password?
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
-                    <DialogHeader>
-                      <DialogTitle className="text-white font-dm-sans">Reset Password</DialogTitle>
-                      <DialogDescription className="text-gray-400">
-                        Enter your email address and we'll send you a link to reset your password.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleForgotPassword} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="forgot-email" className="text-gray-300">Email</Label>
-                        <Input
-                          id="forgot-email"
-                          type="email"
-                          placeholder="name@example.com"
-                          value={forgotPasswordEmail}
-                          onChange={(e) => {
-                            setForgotPasswordEmail(e.target.value);
-                            // Clear error when user starts typing
-                            if (forgotPasswordError) {
-                              setForgotPasswordError('');
-                            }
-                          }}
-                          className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                          required
-                          aria-describedby={forgotPasswordError ? "forgot-password-error" : undefined}
-                        />
-                        {forgotPasswordError && (
-                          <p id="forgot-password-error" className="text-red-400 text-sm mt-1" role="alert">
-                            {forgotPasswordError}
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        type="submit"
-                        disabled={isForgotPasswordLoading || !forgotPasswordEmail.trim()}
-                        onClick={(e) => {
-                          // Ensure this button only handles forgot password logic
-                          e.stopPropagation();
-                        }}
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Send password reset email"
-                      >
-                        <Lock className="w-4 h-4 mr-2" />
-                        {isForgotPasswordLoading ? 'Sending Reset Email...' : 'Send Reset Link'}
-                      </Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <button
+                  type="button"
+                  onClick={handleForgotPasswordClick}
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  aria-label="Open forgot password dialog"
+                >
+                  Forgot Password?
+                </button>
               </div>
             </CardContent>
             
@@ -321,6 +275,57 @@ const Login = () => {
             </CardFooter>
           </form>
         </Card>
+
+        {/* Forgot Password Dialog */}
+        <Dialog open={isForgotPasswordOpen} onOpenChange={handleForgotPasswordDialogChange}>
+          <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
+            <DialogHeader>
+              <DialogTitle className="text-white font-dm-sans">Reset Password</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Enter your email address and we'll send you a link to reset your password.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="forgot-email" className="text-gray-300">Email</Label>
+                <Input
+                  id="forgot-email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={forgotPasswordEmail}
+                  onChange={(e) => {
+                    setForgotPasswordEmail(e.target.value);
+                    // Clear error when user starts typing
+                    if (forgotPasswordError) {
+                      setForgotPasswordError('');
+                    }
+                  }}
+                  className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                  required
+                  aria-describedby={forgotPasswordError ? "forgot-password-error" : undefined}
+                />
+                {forgotPasswordError && (
+                  <p id="forgot-password-error" className="text-red-400 text-sm mt-1" role="alert">
+                    {forgotPasswordError}
+                  </p>
+                )}
+              </div>
+              <Button
+                type="submit"
+                disabled={isForgotPasswordLoading || !forgotPasswordEmail.trim()}
+                onClick={(e) => {
+                  // Ensure this button only handles forgot password logic
+                  e.stopPropagation();
+                }}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Send password reset email"
+              >
+                <Lock className="w-4 h-4 mr-2" />
+                {isForgotPasswordLoading ? 'Sending Reset Email...' : 'Send Reset Link'}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Signup Section */}
         <div className="text-center">
