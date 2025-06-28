@@ -280,7 +280,7 @@ const Login = () => {
         <Dialog open={isForgotPasswordOpen} onOpenChange={handleForgotPasswordDialogChange}>
           <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
             <DialogHeader>
-              <DialogTitle className="text-white font-dm-sans">Password Retrieval</DialogTitle>
+              <DialogTitle className="text-white font-dm-sans">Forgot Password?</DialogTitle>
               <DialogDescription className="text-gray-400">
                 Enter your email address and we'll send you a link to retrieve your password.
               </DialogDescription>
