@@ -142,8 +142,8 @@ const Login = () => {
       );
       
       toast({
-        title: "Password Reset Email Sent",
-        description: `We've sent password reset instructions to ${forgotPasswordEmail}. Please check your email (including spam folder) and follow the link to reset your password.`,
+        title: "Password retrieval Email Sent",
+        description: `We've sent password retrieval instructions to ${forgotPasswordEmail}. Please check your email (including spam folder) and follow the link to retrieve your password.`,
       });
       
       // Clear form and close dialog on success
@@ -153,7 +153,7 @@ const Login = () => {
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Network error occurred";
-      setForgotPasswordError(`Failed to send reset email: ${errorMessage}. Please try again or contact support if the problem persists.`);
+      setForgotPasswordError(`Failed to send retrieval email: ${errorMessage}. Please try again or contact support if the problem persists.`);
     } finally {
       setIsForgotPasswordLoading(false);
     }
@@ -280,9 +280,9 @@ const Login = () => {
         <Dialog open={isForgotPasswordOpen} onOpenChange={handleForgotPasswordDialogChange}>
           <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
             <DialogHeader>
-              <DialogTitle className="text-white font-dm-sans">Reset Password</DialogTitle>
+              <DialogTitle className="text-white font-dm-sans">Password Retrieval</DialogTitle>
               <DialogDescription className="text-gray-400">
-                Enter your email address and we'll send you a link to reset your password.
+                Enter your email address and we'll send you a link to retrieve your password.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleForgotPassword} className="space-y-4">
