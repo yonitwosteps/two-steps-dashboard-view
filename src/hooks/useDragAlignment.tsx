@@ -55,7 +55,7 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     
     // Set initial position
     setPosition({
-      x: clientX - offsetRef.current.x - rect.width/100,
+      x: clientX - offsetRef.current.x - rect.width/-100,
       y: clientY - offsetRef.current.y - rect.height/100,
     });
 
@@ -71,7 +71,7 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     const rect = draggedElement.getBoundingClientRect();
     
     setPosition({
-      x: clientX - offsetRef.current.x - rect.width/100,
+      x: clientX - offsetRef.current.x - rect.width/-100,
       y: clientY - offsetRef.current.y - rect.height/100,
     });
   }, [draggedItemId, draggedElement]);
