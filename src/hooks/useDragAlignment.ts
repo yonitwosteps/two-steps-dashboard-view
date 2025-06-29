@@ -1,6 +1,4 @@
-
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useCallback, useRef } from 'react';
 
 interface DragOffset {
   x: number;
@@ -19,122 +17,79 @@ interface DragAlignmentConfig {
 
 export const useDragAlignment = (config?: DragAlignmentConfig) => {
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
-  const [position, setPosition] = useState<Position | null>(null);
-  const [ghostContent, setGhostContent] = useState<string | null>(null);
-  const [ghostStyles, setGhostStyles] = useState<React.CSSProperties | null>(null);
-  const offsetRef = useRef<DragOffset>({ x: 0, y: 0 });
-  const originalElementRef = useRef<HTMLElement | null>(null);
+  const [currentPosition, setCurrentPosition] = useState<Position>({ x: 0, y: 0 });
+  const initialOffsetRef = useRef<DragOffset>({ x: 0, y: 0 });
 
-  const handleDragStart = useCallback((e: MouseEvent | TouchEvent, id: string) => {
-    const target = e.currentTarget as HTMLElement;
+  const handleDragStart = useCallback((event: MouseEvent | TouchEvent, itemId: string) => {
+    const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
 
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
-
-    // Calculate offset between cursor and element top-left
-    offsetRef.current = {
-      x: clientX - rect.left,
-      y: clientY - rect.top,
-    };
-
-    // Store reference to original element
-    originalElementRef.current = target;
-
-    // Create ghost styles
-    const styles: React.CSSProperties = {
-      position: 'fixed',
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-      zIndex: 9999,
-      pointerEvents: 'none',
-      transform: 'rotate(3deg) scale(1.05)',
-      opacity: 0.9,
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
-      transition: 'none',
-    };
-
-    // Capture the HTML content of the element
-    const content = target.outerHTML;
-
-    setGhostContent(content);
-    setGhostStyles(styles);
-
-    // Hide original element
-    target.style.opacity = '0.3';
-
-    setDraggedItemId(id);
-    
-    // Initial position
-    setPosition({
-      x: clientX - offsetRef.current.x,
-      y: clientY - offsetRef.current.y,
-    });
-
-    config?.onDragStart?.(id, offsetRef.current);
-  }, [config]);
-
-  const handleDragMove = useCallback((e: MouseEvent | TouchEvent) => {
-    if (!draggedItemId || !ghostContent) return;
-
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
-
-    const newPosition = {
-      x: clientX - offsetRef.current.x,
-      y: clientY - offsetRef.current.y,
-    };
-
-    setPosition(newPosition);
-  }, [draggedItemId, ghostContent]);
-
-  const handleDragEnd = useCallback(() => {
-    // Restore original element visibility
-    if (originalElementRef.current) {
-      originalElementRef.current.style.opacity = '';
+    let clientX: number, clientY: number;
+    if ('touches' in event) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
     }
 
+    const offsetX = clientX - rect.left;
+    const offsetY = clientY - rect.top;
+
+    const initialOffset = { x: offsetX, y: offsetY };
+    setDraggedItemId(itemId);
+    setCurrentPosition({ x: rect.left, y: rect.top });
+    initialOffsetRef.current = initialOffset;
+
+    config?.onDragStart?.(itemId, initialOffset);
+  }, [config]);
+
+  const handleDragMove = useCallback((event: MouseEvent | TouchEvent) => {
+    if (!draggedItemId) return;
+
+    let clientX: number, clientY: number;
+    if ('touches' in event) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+
+    const newPosition = {
+      x: clientX - initialOffsetRef.current.x,
+      y: clientY - initialOffsetRef.current.y,
+    };
+
+    setCurrentPosition(newPosition);
+  }, [draggedItemId]);
+
+  const handleDragEnd = useCallback(() => {
     setDraggedItemId(null);
-    setPosition(null);
-    setGhostContent(null);
-    setGhostStyles(null);
-    originalElementRef.current = null;
+    setCurrentPosition({ x: 0, y: 0 });
+    initialOffsetRef.current = { x: 0, y: 0 };
+
     config?.onDragEnd?.();
   }, [config]);
 
-  // Create portal for ghost element
-  const renderGhost = useCallback(() => {
-    if (!ghostContent || !ghostStyles || !position) return null;
+  const getDragStyle = useCallback((itemId: string) => {
+    if (draggedItemId !== itemId) return {};
 
-    const updatedStyles = {
-      ...ghostStyles,
-      left: position.x,
-      top: position.y,
+    return {
+      transform: `translate(${currentPosition.x}px, ${currentPosition.y}px)`,
+      transformOrigin: 'top left',
+      position: 'absolute' as const,
+      zIndex: 1000,
     };
-
-    return createPortal(
-      <div
-        style={updatedStyles}
-        dangerouslySetInnerHTML={{ __html: ghostContent }}
-      />,
-      document.body
-    );
-  }, [ghostContent, ghostStyles, position]);
-
-  const getDragStyle = useCallback((id: string) => {
-    // Return empty style since we're using portal now
-    return {};
-  }, []);
+  }, [draggedItemId, currentPosition]);
 
   return {
     draggedItemId,
+    currentPosition,
     handleDragStart,
     handleDragMove,
     handleDragEnd,
     getDragStyle,
-    renderGhost,
     isDragging: !!draggedItemId,
   };
 };
