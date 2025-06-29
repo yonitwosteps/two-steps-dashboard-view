@@ -71,8 +71,8 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     const rect = draggedElement.getBoundingClientRect();
     
     setPosition({
-      x: clientX - offsetRef.current.x - rect.width,
-      y: clientY - offsetRef.current.y - rect.height,
+      x: clientX - offsetRef.current.x - rect.width/100,
+      y: clientY - offsetRef.current.y - rect.height100,
     });
   }, [draggedItemId, draggedElement]);
 
