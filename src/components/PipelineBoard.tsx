@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -29,8 +28,10 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import DealCard from './DealCard';
+import EnhancedDealCard from './EnhancedDealCard';
 import DealQuickView from './DealQuickView';
 import PipelineSelector from './PipelineSelector';
+import { useDragAlignment } from '../hooks/useDragAlignment';
 
 interface Deal {
   id: string;
@@ -68,6 +69,22 @@ const PipelineBoard = () => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [filterValue, setFilterValue] = useState('');
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
+
+  // Enhanced drag alignment hook
+  const {
+    draggedItemId,
+    handleDragStart,
+    handleDragEnd,
+    getDragStyle,
+    isDragging,
+  } = useDragAlignment({
+    onDragStart: (draggedId, offset) => {
+      console.log(`Started dragging ${draggedId} with offset:`, offset);
+    },
+    onDragEnd: () => {
+      console.log('Drag ended');
+    },
+  });
 
   // Enhanced mock data with better structure
   const [pipelines, setPipelines] = useState<Pipeline[]>([
@@ -219,7 +236,9 @@ const PipelineBoard = () => {
 
   const currentPipeline = pipelines.find(p => p.id === selectedPipeline);
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEndWithAlignment = (result: any) => {
+    handleDragEnd();
+    
     if (!result.destination || !currentPipeline) return;
 
     const { source, destination } = result;
@@ -384,8 +403,8 @@ const PipelineBoard = () => {
         </Card>
       </div>
 
-      {/* Enhanced Pipeline Board */}
-      <DragDropContext onDragEnd={handleDragEnd}>
+      {/* Enhanced Pipeline Board with improved drag alignment */}
+      <DragDropContext onDragEnd={handleDragEndWithAlignment}>
         <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
           {currentPipeline.stages.map(stage => (
             <div key={stage.id} className="flex-shrink-0 w-80 animate-fade-in">
@@ -463,16 +482,20 @@ const PipelineBoard = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`transition-all duration-200 ${
-                                  snapshot.isDragging 
-                                    ? 'rotate-3 scale-105 shadow-2xl z-50' 
-                                    : 'hover:scale-102'
-                                }`}
+                                className="transition-all duration-200"
                               >
-                                <DealCard 
+                                <EnhancedDealCard 
                                   deal={deal} 
                                   onClick={() => handleDealClick(deal)}
                                   isSelected={selectedDeals.includes(deal.id)}
+                                  isDragging={snapshot.isDragging || draggedItemId === deal.id}
+                                  dragStyle={getDragStyle(deal.id)}
+                                  onDragHandleMouseDown={(e) => {
+                                    handleDragStart(e.nativeEvent, deal.id);
+                                  }}
+                                  onDragHandleTouchStart={(e) => {
+                                    handleDragStart(e.nativeEvent, deal.id);
+                                  }}
                                 />
                               </div>
                             )}
