@@ -17,75 +17,57 @@ interface DragAlignmentConfig {
 
 export const useDragAlignment = (config?: DragAlignmentConfig) => {
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
-  const [currentPosition, setCurrentPosition] = useState<Position>({ x: 0, y: 0 });
-  const initialOffsetRef = useRef<DragOffset>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position | null>(null);
+  const offsetRef = useRef<DragOffset>({ x: 0, y: 0 });
 
-  const handleDragStart = useCallback((event: MouseEvent | TouchEvent, itemId: string) => {
-    const target = event.currentTarget as HTMLElement;
+  const handleDragStart = useCallback((e: MouseEvent | TouchEvent, id: string) => {
+    const target = e.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
 
-    let clientX: number, clientY: number;
-    if ('touches' in event) {
-      clientX = event.touches[0].clientX;
-      clientY = event.touches[0].clientY;
-    } else {
-      clientX = event.clientX;
-      clientY = event.clientY;
-    }
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
-    const offsetX = clientX - rect.left;
-    const offsetY = clientY - rect.top;
-
-    const initialOffset = { x: offsetX, y: offsetY };
-    setDraggedItemId(itemId);
-    setCurrentPosition({ x: rect.left, y: rect.top });
-    initialOffsetRef.current = initialOffset;
-
-    config?.onDragStart?.(itemId, initialOffset);
-  }, [config]);
-
-  const handleDragMove = useCallback((event: MouseEvent | TouchEvent) => {
-    if (!draggedItemId) return;
-
-    let clientX: number, clientY: number;
-    if ('touches' in event) {
-      clientX = event.touches[0].clientX;
-      clientY = event.touches[0].clientY;
-    } else {
-      clientX = event.clientX;
-      clientY = event.clientY;
-    }
-
-    const newPosition = {
-      x: clientX - initialOffsetRef.current.x,
-      y: clientY - initialOffsetRef.current.y,
+    offsetRef.current = {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     };
 
-    setCurrentPosition(newPosition);
+    setDraggedItemId(id);
+    config?.onDragStart?.(id, offsetRef.current);
+  }, [config]);
+
+  const handleDragMove = useCallback((e: MouseEvent | TouchEvent) => {
+    if (!draggedItemId) return;
+
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+
+    setPosition({
+      x: clientX - offsetRef.current.x,
+      y: clientY - offsetRef.current.y,
+    });
   }, [draggedItemId]);
 
   const handleDragEnd = useCallback(() => {
     setDraggedItemId(null);
-    setCurrentPosition({ x: 0, y: 0 });
-    initialOffsetRef.current = { x: 0, y: 0 };
-
+    setPosition(null);
     config?.onDragEnd?.();
   }, [config]);
 
-  const getDragStyle = useCallback((itemId: string) => {
-    if (draggedItemId !== itemId) return {};
+  const getDragStyle = useCallback((id: string) => {
+    if (draggedItemId !== id || !position) return {};
 
     return {
-      transform: `translate(${currentPosition.x}px, ${currentPosition.y}px)`,
-      transformOrigin: 'top left',
       position: 'absolute' as const,
+      left: `${position.x}px`,
+      top: `${position.y}px`,
       zIndex: 1000,
+      pointerEvents: 'none' as const,
     };
-  }, [draggedItemId, currentPosition]);
+  }, [draggedItemId, position]);
 
   return {
     draggedItemId,
-    currentPosition,
     handleDragStart,
     handleDragMove,
     handleDragEnd,
