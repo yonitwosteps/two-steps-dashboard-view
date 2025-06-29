@@ -6,6 +6,11 @@ interface DragOffset {
   y: number;
 }
 
+interface Position {
+  x: number;
+  y: number;
+}
+
 interface DragAlignmentConfig {
   onDragStart?: (draggedId: string, offset: DragOffset) => void;
   onDragEnd?: () => void;
@@ -13,14 +18,14 @@ interface DragAlignmentConfig {
 
 export const useDragAlignment = (config?: DragAlignmentConfig) => {
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState<DragOffset>({ x: 0, y: 0 });
+  const [currentPosition, setCurrentPosition] = useState<Position>({ x: 0, y: 0 });
   const initialOffsetRef = useRef<DragOffset>({ x: 0, y: 0 });
 
   const handleDragStart = useCallback((event: MouseEvent | TouchEvent, itemId: string) => {
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
     
-    // Calculate initial offset from cursor to element center
+    // Calculate initial offset from cursor to element origin (top-left corner)
     let clientX: number, clientY: number;
     
     if ('touches' in event) {
@@ -33,16 +38,14 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
       clientY = event.clientY;
     }
 
-    const elementCenterX = rect.left + rect.width / 2;
-    const elementCenterY = rect.top + rect.height / 2;
-    
-    const offsetX = clientX - elementCenterX;
-    const offsetY = clientY - elementCenterY;
+    // Offset from cursor to element origin
+    const offsetX = clientX - rect.left;
+    const offsetY = clientY - rect.top;
     
     const initialOffset = { x: offsetX, y: offsetY };
     
     setDraggedItemId(itemId);
-    setDragOffset(initialOffset);
+    setCurrentPosition({ x: rect.left, y: rect.top });
     initialOffsetRef.current = initialOffset;
     
     config?.onDragStart?.(itemId, initialOffset);
@@ -61,18 +64,18 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
       clientY = event.clientY;
     }
 
-    // Apply the stored offset to maintain cursor position relative to element center
-    const adjustedOffset = {
-      x: initialOffsetRef.current.x,
-      y: initialOffsetRef.current.y
+    // Calculate the current element position using clientX/clientY minus the initial offset
+    const newPosition = {
+      x: clientX - initialOffsetRef.current.x,
+      y: clientY - initialOffsetRef.current.y
     };
     
-    setDragOffset(adjustedOffset);
+    setCurrentPosition(newPosition);
   }, [draggedItemId]);
 
   const handleDragEnd = useCallback(() => {
     setDraggedItemId(null);
-    setDragOffset({ x: 0, y: 0 });
+    setCurrentPosition({ x: 0, y: 0 });
     initialOffsetRef.current = { x: 0, y: 0 };
     
     config?.onDragEnd?.();
@@ -82,14 +85,17 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     if (draggedItemId !== itemId) return {};
     
     return {
-      transform: `translate(${-dragOffset.x}px, ${-dragOffset.y}px)`,
-      transformOrigin: 'center',
+      transform: `translate(${currentPosition.x}px, ${currentPosition.y}px)`,
+      transformOrigin: 'top left',
+      position: 'fixed' as const,
+      zIndex: 1000,
+      pointerEvents: 'none' as const,
     };
-  }, [draggedItemId, dragOffset]);
+  }, [draggedItemId, currentPosition]);
 
   return {
     draggedItemId,
-    dragOffset,
+    currentPosition,
     handleDragStart,
     handleDragMove,
     handleDragEnd,
