@@ -1,5 +1,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { WEBHOOK_CONFIG } from '@/config/webhooks';
+import { SessionSecurity } from '@/utils/sessionSecurity';
+import { authRateLimiter, LoginSchema, SignupSchema } from '@/utils/authValidation';
+import { SecureHttpClient } from '@/utils/httpClient';
 
 interface User {
   id: string;
@@ -36,27 +40,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user data on app load
-    const storedUser = localStorage.getItem('user');
+    // Check for stored user data on app load using secure session management
+    const storedUser = SessionSecurity.getSession();
     if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        localStorage.removeItem('user');
-      }
+      setUser(storedUser);
     }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await fetch('https://twosteps.app.n8n.cloud/webhook/167477c9-c4a2-47a3-8823-f5067705b880', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      // Validate input
+      const validatedData = LoginSchema.parse({ email, password });
+      
+      // Check rate limiting
+      if (authRateLimiter.isRateLimited(email)) {
+        const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(email) / 60000);
+        return { 
+          success: false, 
+          error: `Too many failed attempts. Please try again in ${remainingTime} minutes.` 
+        };
+      }
+
+      const response = await SecureHttpClient.post(WEBHOOK_CONFIG.LOGIN_WEBHOOK, validatedData);
 
       const responseText = await response.text();
       
@@ -84,13 +90,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         };
         
         setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
+        SessionSecurity.setSession(userData);
         return { success: true };
       }
       
       return { success: false, error: 'Incorrect email or password' };
     } catch (error) {
-      console.error('Login error:', error);
+      // Don't log sensitive information
       return { success: false, error: 'Network error. Please try again.' };
     }
   };
@@ -102,42 +108,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
+      // Validate input
+      const validatedData = SignupSchema.parse({
+        firstName,
+        lastName,
+        email_address: email,
+        password,
+        phone_number: phone || ''
+      });
+
       // Convert phone to number if provided, otherwise use empty string
-      const phoneNumber = phone && phone.trim() ? parseInt(phone.replace(/\D/g, ''), 10) : '';
+      const phoneNumber = validatedData.phone_number && validatedData.phone_number.trim() ? 
+        parseInt(validatedData.phone_number.replace(/\D/g, ''), 10) : '';
 
       // Create payload matching exact Supabase field mapping
       const payload = {
-        email_address: email,
-        password: password,
-        first_name: firstName,
-        last_name: lastName,
+        email_address: validatedData.email_address,
+        password: validatedData.password,
+        first_name: validatedData.firstName,
+        last_name: validatedData.lastName,
         phone_number: phoneNumber
       };
 
-      console.log('Signup payload:', payload);
+      const response = await SecureHttpClient.post(WEBHOOK_CONFIG.SIGNUP_WEBHOOK, payload);
 
-      const response = await fetch('https://twosteps.app.n8n.cloud/webhook/236f4d2c-7eb7-4f01-80cd-f4bb24703944', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        return true;
-      }
-      
-      return false;
+      return response.ok;
     } catch (error) {
-      console.error('Signup error:', error);
+      // Don't log sensitive information
       return false;
     }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    SessionSecurity.clearSession();
   };
 
   const value: AuthContextType = {

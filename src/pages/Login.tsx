@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, LogIn, UserPlus, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { SecureHttpClient } from '@/utils/httpClient';
+import { WEBHOOK_CONFIG } from '@/config/webhooks';
+import { LoginSchema, SignupSchema, ForgotPasswordSchema, authRateLimiter } from '@/utils/authValidation';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +22,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [signupErrors, setSignupErrors] = useState<Record<string, string>>({});
   const [forgotPasswordError, setForgotPasswordError] = useState('');
   const { toast } = useToast();
 
@@ -51,12 +53,23 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent any event bubbling
+    e.stopPropagation();
     setIsLoading(true);
     setLoginError('');
 
     try {
-      const result = await login(loginData.email, loginData.password);
+      // Validate input
+      const validatedData = LoginSchema.parse(loginData);
+      
+      // Check rate limiting
+      if (authRateLimiter.isRateLimited(validatedData.email)) {
+        const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(validatedData.email) / 60000);
+        setLoginError(`Too many failed attempts. Please try again in ${remainingTime} minutes.`);
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await login(validatedData.email, validatedData.password);
       
       if (result.success) {
         toast({
@@ -68,8 +81,14 @@ const Login = () => {
         setLoginError(result.error || 'Login failed');
       }
       
-    } catch (error) {
-      setLoginError('An error occurred during login');
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation errors
+        const firstError = error.errors[0];
+        setLoginError(firstError.message);
+      } else {
+        setLoginError('An error occurred during login');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -78,15 +97,16 @@ const Login = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setSignupErrors({});
 
     try {
+      // Validate input
+      const validatedData = SignupSchema.parse(signupData);
+      
       // Create the full name for the existing signup function
-      const fullName = `${signupData.firstName} ${signupData.lastName}`.trim();
+      const fullName = `${validatedData.firstName} ${validatedData.lastName}`.trim();
       
-      // Convert phone_number to number if provided
-      const phoneNumber = signupData.phone_number ? signupData.phone_number : '';
-      
-      const success = await signup(fullName, signupData.email_address, signupData.password, phoneNumber);
+      const success = await signup(fullName, validatedData.email_address, validatedData.password, validatedData.phone_number);
       
       if (success) {
         toast({
@@ -104,12 +124,21 @@ const Login = () => {
         });
       }
       
-    } catch (error) {
-      toast({
-        title: "Signup Failed",
-        description: error instanceof Error ? error.message : "An error occurred during signup",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation errors
+        const errors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          errors[err.path[0]] = err.message;
+        });
+        setSignupErrors(errors);
+      } else {
+        toast({
+          title: "Signup Failed",
+          description: error instanceof Error ? error.message : "An error occurred during signup",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -117,33 +146,20 @@ const Login = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling to parent forms
-    
-    // Enhanced form validation
-    if (!forgotPasswordEmail.trim()) {
-      setForgotPasswordError('Please enter your email address');
-      return;
-    }
-
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(forgotPasswordEmail.trim())) {
-      setForgotPasswordError('Please enter a valid email address');
-      return;
-    }
+    e.stopPropagation();
     
     setIsForgotPasswordLoading(true);
     setForgotPasswordError('');
 
     try {
-      await SecureHttpClient.post(
-        'https://twosteps.app.n8n.cloud/webhook/71f232d5-b882-439b-8cb4-0341585e48f9',
-        { email: forgotPasswordEmail.trim() }
-      );
+      // Validate input
+      const validatedData = ForgotPasswordSchema.parse({ email: forgotPasswordEmail });
+      
+      await SecureHttpClient.post(WEBHOOK_CONFIG.FORGOT_PASSWORD_WEBHOOK, validatedData);
       
       toast({
         title: "Password retrieval Email Sent",
-        description: `We've sent password retrieval instructions to ${forgotPasswordEmail}. Please check your email (including spam folder) and follow the link to retrieve your password.`,
+        description: `We've sent password retrieval instructions to ${validatedData.email}. Please check your email (including spam folder) and follow the link to retrieve your password.`,
       });
       
       // Clear form and close dialog on success
@@ -151,9 +167,15 @@ const Login = () => {
       setForgotPasswordError('');
       setIsForgotPasswordOpen(false);
       
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Network error occurred";
-      setForgotPasswordError(`Failed to send retrieval email: ${errorMessage}. Please try again or contact support if the problem persists.`);
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation errors
+        const firstError = error.errors[0];
+        setForgotPasswordError(firstError.message);
+      } else {
+        const errorMessage = error instanceof Error ? error.message : "Network error occurred";
+        setForgotPasswordError(`Failed to send retrieval email: ${errorMessage}. Please try again or contact support if the problem persists.`);
+      }
     } finally {
       setIsForgotPasswordLoading(false);
     }
@@ -162,13 +184,11 @@ const Login = () => {
   const handleForgotPasswordClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Forgot password clicked, current state:', isForgotPasswordOpen);
     setIsForgotPasswordOpen(true);
   };
 
   // Handle dialog close to reset form state
   const handleForgotPasswordDialogChange = (open: boolean) => {
-    console.log('Dialog state changing to:', open);
     setIsForgotPasswordOpen(open);
     if (!open) {
       // Reset form when dialog closes
@@ -263,7 +283,6 @@ const Login = () => {
                 type="submit"
                 disabled={isLoading}
                 onClick={(e) => {
-                  // Ensure this button only handles login logic
                   e.stopPropagation();
                 }}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium font-dm-sans transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 border-0 rounded-xl py-3"
@@ -295,7 +314,6 @@ const Login = () => {
                   value={forgotPasswordEmail}
                   onChange={(e) => {
                     setForgotPasswordEmail(e.target.value);
-                    // Clear error when user starts typing
                     if (forgotPasswordError) {
                       setForgotPasswordError('');
                     }
@@ -314,7 +332,6 @@ const Login = () => {
                 type="submit"
                 disabled={isForgotPasswordLoading || !forgotPasswordEmail.trim()}
                 onClick={(e) => {
-                  // Ensure this button only handles forgot password logic
                   e.stopPropagation();
                 }}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -357,6 +374,9 @@ const Login = () => {
                         className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                         required
                       />
+                      {signupErrors.firstName && (
+                        <p className="text-red-400 text-sm" role="alert">{signupErrors.firstName}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="signup-lastName" className="text-gray-300">Last Name</Label>
@@ -369,6 +389,9 @@ const Login = () => {
                         className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                         required
                       />
+                      {signupErrors.lastName && (
+                        <p className="text-red-400 text-sm" role="alert">{signupErrors.lastName}</p>
+                      )}
                     </div>
                   </div>
                   
@@ -383,6 +406,9 @@ const Login = () => {
                       className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       required
                     />
+                    {signupErrors.email_address && (
+                      <p className="text-red-400 text-sm" role="alert">{signupErrors.email_address}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -395,6 +421,9 @@ const Login = () => {
                       onChange={(e) => setSignupData(prev => ({ ...prev, phone_number: e.target.value }))}
                       className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
+                    {signupErrors.phone_number && (
+                      <p className="text-red-400 text-sm" role="alert">{signupErrors.phone_number}</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -403,7 +432,7 @@ const Login = () => {
                       <Input
                         id="signup-password"
                         type={showSignupPassword ? "text" : "password"}
-                        placeholder="Create a password"
+                        placeholder="Create a strong password"
                         value={signupData.password}
                         onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
                         className="bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20 pr-10"
@@ -418,6 +447,12 @@ const Login = () => {
                         {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                    {signupErrors.password && (
+                      <p className="text-red-400 text-sm" role="alert">{signupErrors.password}</p>
+                    )}
+                    <p className="text-xs text-gray-500">
+                      Password must be at least 8 characters with uppercase, lowercase, number, and special character.
+                    </p>
                   </div>
                   
                   <Button

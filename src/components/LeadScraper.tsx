@@ -32,7 +32,6 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
     }
 
     setIsLoading(true);
-    console.log('Sending search query:', searchQuery);
     
     try {
       // Validate and sanitize the search query
@@ -41,15 +40,12 @@ const LeadScraper = ({ className }: LeadScraperProps) => {
       
       await SecureHttpClient.post(WEBHOOK_CONFIG.SCRAPER_WEBHOOK, validatedQuery);
       
-      console.log('Search query sent successfully');
       toast({
         title: "Success",
         description: "Search query has been submitted successfully.",
       });
       setSearchQuery(''); // Clear the input after successful send
     } catch (error) {
-      console.error('Error sending search query:', error);
-      
       const errorMessage = error instanceof Error 
         ? error.message 
         : 'Failed to send search query. Please try again.';

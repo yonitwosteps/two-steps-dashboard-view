@@ -19,11 +19,34 @@ export const SearchQuerySchema = z.object({
   query: z.string().min(1, 'Search query cannot be empty').max(500, 'Search query is too long'),
 });
 
-// Sanitize string input to prevent XSS
+// Enhanced XSS prevention
 export const sanitizeString = (input: string): string => {
-  return input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-              .replace(/javascript:/gi, '')
-              .replace(/on\w+\s*=/gi, '');
+  return input
+    // Remove script tags
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    // Remove javascript: URLs
+    .replace(/javascript:/gi, '')
+    // Remove event handlers
+    .replace(/on\w+\s*=/gi, '')
+    // Remove data: URLs that could contain scripts
+    .replace(/data:\s*text\/html/gi, 'data:text/plain')
+    // Remove vbscript: URLs
+    .replace(/vbscript:/gi, '')
+    // Remove style expressions
+    .replace(/expression\s*\(/gi, '')
+    // Remove import statements
+    .replace(/@import/gi, '')
+    .trim();
+};
+
+// Sanitize HTML content more thoroughly
+export const sanitizeHtml = (input: string): string => {
+  const allowedTags = ['b', 'i', 'em', 'strong', 'p', 'br'];
+  const tagRegex = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+  
+  return input.replace(tagRegex, (match, tagName) => {
+    return allowedTags.includes(tagName.toLowerCase()) ? match : '';
+  });
 };
 
 // Validate and sanitize lead data
@@ -38,4 +61,15 @@ export const validateAndSanitizeLead = (lead: unknown) => {
   if (parsed.city) parsed.city = sanitizeString(parsed.city);
   
   return parsed;
+};
+
+// Additional security utilities
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.length <= 254;
+};
+
+export const isValidPhoneNumber = (phone: string): boolean => {
+  const phoneRegex = /^\+?[\d\s\-\(\)]{7,15}$/;
+  return phoneRegex.test(phone);
 };
