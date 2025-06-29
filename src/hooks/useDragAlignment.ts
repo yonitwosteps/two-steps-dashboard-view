@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import React from 'react';
 
 interface DragOffset {
   x: number;
@@ -77,19 +78,22 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     if (!ghostContent || !position) return null;
 
     return createPortal(
-      <div
-        style={{
-          position: 'fixed',
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          zIndex: 99999, // ← ensure it's above all panels
-          pointerEvents: 'none',
-          opacity: 0.9,
-          transform: 'rotate(3deg) scale(1.05)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
-        }}
-        dangerouslySetInnerHTML={{ __html: ghostContent }}
-      />,
+      React.createElement(
+        'div',
+        {
+          style: {
+            position: 'fixed',
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            zIndex: 99999,
+            pointerEvents: 'none',
+            opacity: 0.9,
+            transform: 'rotate(3deg) scale(1.05)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
+          },
+          dangerouslySetInnerHTML: { __html: ghostContent },
+        }
+      ),
       document.body
     );
   }, [ghostContent, position]);
