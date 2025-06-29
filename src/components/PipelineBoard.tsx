@@ -1,36 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import React, { useState } from 'react';
+import { DragDropContext } from '@hello-pangea/dnd';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Badge } from './ui/badge';
 import { 
-  MoreVertical, 
   Plus, 
   Filter, 
   Settings, 
-  Users, 
-  DollarSign,
-  Calendar,
-  Phone,
-  Mail,
-  Eye,
-  Edit,
-  Search,
-  TrendingUp,
-  Target,
-  Zap
+  Search
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import DealCard from './DealCard';
-import EnhancedDealCard from './EnhancedDealCard';
 import DealQuickView from './DealQuickView';
 import PipelineSelector from './PipelineSelector';
+import PipelineStats from './PipelineStats';
+import StageColumn from './StageColumn';
 import { useDragAlignment } from '../hooks/useDragAlignment';
 
 interface Deal {
@@ -76,7 +57,6 @@ const PipelineBoard = () => {
     handleDragStart,
     handleDragEnd,
     getDragStyle,
-    isDragging,
   } = useDragAlignment({
     onDragStart: (draggedId, offset) => {
       console.log(`Started dragging ${draggedId} with offset:`, offset);
@@ -272,19 +252,10 @@ const PipelineBoard = () => {
     setIsQuickViewOpen(true);
   };
 
-  const getTotalValue = (deals: Deal[]) => {
-    return deals.reduce((sum, deal) => sum + deal.value, 0);
-  };
-
-  const getWeightedValue = (deals: Deal[], probability: number) => {
-    return deals.reduce((sum, deal) => sum + (deal.value * probability / 100), 0);
-  };
-
   if (!currentPipeline) return <div>Pipeline not found</div>;
 
   return (
     <div className="h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 sm:p-6">
-      {/* Enhanced Header with better spacing and visual hierarchy */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <PipelineSelector 
@@ -293,7 +264,6 @@ const PipelineBoard = () => {
             onPipelineChange={setSelectedPipeline}
           />
           
-          {/* Enhanced Search and Filter */}
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -314,7 +284,6 @@ const PipelineBoard = () => {
           </div>
         </div>
         
-        {/* Enhanced Action Buttons */}
         <div className="flex items-center gap-3">
           <Button 
             variant="outline" 
@@ -334,199 +303,24 @@ const PipelineBoard = () => {
         </div>
       </div>
 
-      {/* Enhanced Pipeline Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-blue-600/30 rounded-xl flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-blue-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-400 mb-1">Total Pipeline Value</p>
-                <p className="text-2xl font-bold text-white">
-                  ${currentPipeline.stages.reduce((sum, stage) => sum + getTotalValue(stage.deals), 0).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <PipelineStats pipeline={currentPipeline} />
 
-        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 rounded-xl flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-emerald-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-400 mb-1">Weighted Pipeline</p>
-                <p className="text-2xl font-bold text-white">
-                  ${currentPipeline.stages.reduce((sum, stage) => sum + getWeightedValue(stage.deals, stage.probability), 0).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/30 rounded-xl flex items-center justify-center">
-                <Target className="h-6 w-6 text-purple-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-400 mb-1">Total Deals</p>
-                <p className="text-2xl font-bold text-white">
-                  {currentPipeline.stages.reduce((sum, stage) => sum + stage.deals.length, 0)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 hover:bg-gray-900/80 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-amber-600/30 rounded-xl flex items-center justify-center">
-                <Calendar className="h-6 w-6 text-amber-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-400 mb-1">Avg. Deal Age</p>
-                <p className="text-2xl font-bold text-white">
-                  {Math.round(currentPipeline.stages.reduce((sum, stage) => 
-                    sum + stage.deals.reduce((dealSum, deal) => dealSum + deal.age, 0), 0
-                  ) / currentPipeline.stages.reduce((sum, stage) => sum + stage.deals.length, 0) || 0)} days
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Enhanced Pipeline Board with improved drag alignment */}
       <DragDropContext onDragEnd={handleDragEndWithAlignment}>
         <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
           {currentPipeline.stages.map(stage => (
-            <div key={stage.id} className="flex-shrink-0 w-80 animate-fade-in">
-              <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 h-full shadow-xl hover:shadow-2xl transition-all duration-300">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full ${stage.color} shadow-lg`} />
-                      <CardTitle className="text-white text-base font-semibold">
-                        {stage.name}
-                      </CardTitle>
-                      <Badge 
-                        variant="secondary" 
-                        className="bg-gray-800/80 text-gray-300 px-2 py-1 text-xs font-medium"
-                      >
-                        {stage.deals.length}
-                      </Badge>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700/80"
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700 shadow-xl">
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700 focus:bg-gray-700">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Deal
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-gray-300 hover:bg-gray-700 focus:bg-gray-700">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Stage Settings
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  
-                  {/* Enhanced Stage Stats */}
-                  <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Total Value:</span>
-                      <span className="font-semibold text-gray-200">${getTotalValue(stage.deals).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Weighted:</span>
-                      <span className="font-semibold text-gray-200">${getWeightedValue(stage.deals, stage.probability).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-400">Win Rate:</span>
-                      <span className="font-semibold text-gray-200">{stage.probability}%</span>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="p-4 pt-0">
-                  <Droppable droppableId={stage.id}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-all duration-300 ${
-                          snapshot.isDraggingOver 
-                            ? 'bg-gray-800/60 border-2 border-dashed border-gray-600' 
-                            : 'bg-transparent'
-                        }`}
-                      >
-                        {stage.deals.map((deal, index) => (
-                          <Draggable key={deal.id} draggableId={deal.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="transition-all duration-200"
-                              >
-                                <EnhancedDealCard 
-                                  deal={deal} 
-                                  onClick={() => handleDealClick(deal)}
-                                  isSelected={selectedDeals.includes(deal.id)}
-                                  isDragging={snapshot.isDragging || draggedItemId === deal.id}
-                                  dragStyle={getDragStyle(deal.id)}
-                                  onDragHandleMouseDown={(e) => {
-                                    handleDragStart(e.nativeEvent, deal.id);
-                                  }}
-                                  onDragHandleTouchStart={(e) => {
-                                    handleDragStart(e.nativeEvent, deal.id);
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                        
-                        {/* Add Deal Button in Empty State */}
-                        {stage.deals.length === 0 && (
-                          <div className="flex items-center justify-center h-32 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-600 transition-colors">
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="text-gray-400 hover:text-white"
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Add Deal
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </Droppable>
-                </CardContent>
-              </Card>
-            </div>
+            <StageColumn
+              key={stage.id}
+              stage={stage}
+              selectedDeals={selectedDeals}
+              draggedItemId={draggedItemId}
+              getDragStyle={getDragStyle}
+              handleDragStart={handleDragStart}
+              onDealClick={handleDealClick}
+            />
           ))}
         </div>
       </DragDropContext>
 
-      {/* Deal Quick View Modal */}
       <DealQuickView
         deal={selectedDeal}
         isOpen={isQuickViewOpen}
