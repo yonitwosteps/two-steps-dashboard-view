@@ -31,8 +31,8 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
     // Calculate offset from cursor to center of the card
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    const centerX = rect.left + rect.width;
+    const centerY = rect.top + rect.height;
     
     offsetRef.current = {
       x: clientX - centerX,
