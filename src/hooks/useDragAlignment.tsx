@@ -31,8 +31,8 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
     // Calculate offset from cursor to center of the card
-    const centerX = rect.left + rect.width;
-    const centerY = rect.top + rect.height;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
     
     offsetRef.current = {
       x: clientX - centerX,
@@ -53,10 +53,10 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     setDraggedElement(clonedElement);
     setDraggedItemId(id);
     
-    // Set initial position
+    // Set initial position using client - offset logic
     setPosition({
-      x: clientX - offsetRef.current.x - rect.width/-100,
-      y: clientY - offsetRef.current.y - rect.height/-100,
+      x: clientX - offsetRef.current.x - rect.width / 2,
+      y: clientY - offsetRef.current.y - rect.height / 2,
     });
 
     config?.onDragStart?.(id, offsetRef.current);
@@ -65,14 +65,18 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
   const handleDragMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (!draggedItemId || !draggedElement) return;
 
+    // Prevent default scroll behavior while dragging
+    e.preventDefault();
+
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
     const rect = draggedElement.getBoundingClientRect();
     
+    // Update position using client - offset logic
     setPosition({
-      x: clientX - offsetRef.current.x - rect.width/-100,
-      y: clientY - offsetRef.current.y - rect.height/-100,
+      x: clientX - offsetRef.current.x - rect.width / 2,
+      y: clientY - offsetRef.current.y - rect.height / 2,
     });
   }, [draggedItemId, draggedElement]);
 
@@ -93,14 +97,14 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     };
   }, [draggedItemId]);
 
-  // Render the dragged element using portal
+  // Render the dragged element using portal with high z-index
   const dragPortal = draggedElement && position ? createPortal(
     <div
       style={{
         position: 'fixed',
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: 0,
+        zIndex: 99999,
         pointerEvents: 'none',
         width: draggedElement.style.width,
         height: draggedElement.style.height,
