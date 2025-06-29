@@ -75,7 +75,7 @@ const PipelineBoard = () => {
     draggedItemId,
     handleDragStart,
     handleDragEnd,
-    getDragStyle,
+    renderGhost,
     isDragging,
   } = useDragAlignment({
     onDragStart: (draggedId, offset) => {
@@ -489,7 +489,6 @@ const PipelineBoard = () => {
                                   onClick={() => handleDealClick(deal)}
                                   isSelected={selectedDeals.includes(deal.id)}
                                   isDragging={snapshot.isDragging || draggedItemId === deal.id}
-                                  dragStyle={getDragStyle(deal.id)}
                                   onDragHandleMouseDown={(e) => {
                                     handleDragStart(e.nativeEvent, deal.id);
                                   }}
@@ -525,6 +524,9 @@ const PipelineBoard = () => {
           ))}
         </div>
       </DragDropContext>
+
+      {/* Render ghost element via portal */}
+      {renderGhost()}
 
       {/* Deal Quick View Modal */}
       <DealQuickView
