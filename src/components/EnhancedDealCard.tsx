@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
@@ -33,6 +34,7 @@ interface EnhancedDealCardProps {
   onClick: () => void;
   isSelected: boolean;
   isDragging?: boolean;
+  dragStyle?: React.CSSProperties;
   onDragHandleMouseDown?: (event: React.MouseEvent) => void;
   onDragHandleTouchStart?: (event: React.TouchEvent) => void;
 }
@@ -42,6 +44,7 @@ const EnhancedDealCard: React.FC<EnhancedDealCardProps> = ({
   onClick, 
   isSelected,
   isDragging = false,
+  dragStyle = {},
   onDragHandleMouseDown,
   onDragHandleTouchStart
 }) => {
@@ -68,9 +71,10 @@ const EnhancedDealCard: React.FC<EnhancedDealCardProps> = ({
       className={`bg-gray-800/80 border-gray-700/50 hover:border-gray-600/50 cursor-pointer transition-all duration-200 hover:shadow-xl group ${
         isSelected ? 'ring-2 ring-blue-500 border-blue-500/50' : ''
       } ${
-        isDragging ? 'opacity-30' : 'hover:scale-[1.02]'
+        isDragging ? 'rotate-3 scale-105 shadow-2xl z-50 opacity-90' : 'hover:scale-[1.02]'
       }`}
       onClick={onClick}
+      style={dragStyle}
       onMouseDown={onDragHandleMouseDown}
       onTouchStart={onDragHandleTouchStart}
     >
