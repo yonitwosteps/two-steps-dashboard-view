@@ -27,6 +27,7 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
+    // Offset between cursor and element top-left
     offsetRef.current = {
       x: clientX - rect.left,
       y: clientY - rect.top,
@@ -58,10 +59,10 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     if (draggedItemId !== id || !position) return {};
 
     return {
-      position: 'absolute' as const,
-      left: `${position.x}px`,
+      position: 'fixed' as const,
       top: `${position.y}px`,
-      zIndex: 1000,
+      left: `${position.x}px`,
+      zIndex: 9999,
       pointerEvents: 'none' as const,
     };
   }, [draggedItemId, position]);
