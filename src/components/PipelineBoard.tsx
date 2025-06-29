@@ -74,11 +74,9 @@ const PipelineBoard = () => {
   const {
     draggedItemId,
     handleDragStart,
-    handleDragMove,
     handleDragEnd,
     getDragStyle,
     isDragging,
-    dragPortal,
   } = useDragAlignment({
     onDragStart: (draggedId, offset) => {
       console.log(`Started dragging ${draggedId} with offset:`, offset);
@@ -87,28 +85,6 @@ const PipelineBoard = () => {
       console.log('Drag ended');
     },
   });
-
-  // Add global mouse event listeners
-  React.useEffect(() => {
-    if (isDragging) {
-      const handleMouseMove = (e: MouseEvent) => handleDragMove(e);
-      const handleMouseUp = () => handleDragEnd();
-      const handleTouchMove = (e: TouchEvent) => handleDragMove(e);
-      const handleTouchEnd = () => handleDragEnd();
-
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleTouchMove);
-      document.addEventListener('touchend', handleTouchEnd);
-
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('touchmove', handleTouchMove);
-        document.removeEventListener('touchend', handleTouchEnd);
-      };
-    }
-  }, [isDragging, handleDragMove, handleDragEnd]);
 
   // Enhanced mock data with better structure
   const [pipelines, setPipelines] = useState<Pipeline[]>([
@@ -549,9 +525,6 @@ const PipelineBoard = () => {
           ))}
         </div>
       </DragDropContext>
-
-      {/* Render drag portal */}
-      {dragPortal}
 
       {/* Deal Quick View Modal */}
       <DealQuickView
