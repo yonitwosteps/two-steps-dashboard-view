@@ -100,7 +100,7 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
         position: 'fixed',
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: 99999,
+        zIndex: 0,
         pointerEvents: 'none',
         width: draggedElement.style.width,
         height: draggedElement.style.height,
