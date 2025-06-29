@@ -55,8 +55,8 @@ export const useDragAlignment = (config?: DragAlignmentConfig) => {
     
     // Set initial position
     setPosition({
-      x: clientX - offsetRef.current.x - rect.width,
-      y: clientY - offsetRef.current.y - rect.height,
+      x: clientX - offsetRef.current.x - rect.width/100,
+      y: clientY - offsetRef.current.y - rect.height/100,
     });
 
     config?.onDragStart?.(id, offsetRef.current);
