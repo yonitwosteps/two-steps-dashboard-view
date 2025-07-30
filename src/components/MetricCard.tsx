@@ -47,7 +47,7 @@ const MetricCard = ({
           )}>
             {change}
           </span>
-          <span className="text-slate-400 text-xs">From 204,234</span>
+          <span className="text-slate-400 text-xs">vs last month</span>
         </div>
       </div>
     </div>
