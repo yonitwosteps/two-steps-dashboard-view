@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// For Lovable's native Supabase integration, these environment variables are automatically provided
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Use the actual Supabase project configuration
+const supabaseUrl = 'https://rkfwxdkqeohjgppizomb.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrZnd4ZGtxZW9oamdwcGl6b21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwNTYwMjUsImV4cCI6MjA2NjYzMjAyNX0.fmbBFRvWxT_u46WkujxmMyoCtHyw9YKkV8Zs0DFmPBM';
 
 // Create a fallback client if environment variables are not available
 // This handles cases where the Supabase integration might not be fully configured
