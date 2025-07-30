@@ -1,10 +1,8 @@
+import { isValidWebhookUrl } from '@/config/webhooks';
 
-import { isValidWebhookUrl, getSecurityHeaders } from '@/config/webhooks';
-
-// Enhanced HTTP client with security measures
+// Simple HTTP client for webhook operations
 export class SecureHttpClient {
   private static readonly TIMEOUT = 10000; // 10 seconds
-  private static readonly MAX_RETRIES = 3;
 
   static async post(url: string, data: unknown, options: RequestInit = {}) {
     // Validate URL
@@ -12,21 +10,17 @@ export class SecureHttpClient {
       throw new Error('Invalid webhook URL provided');
     }
 
-    // Sanitize data to prevent injection attacks
-    const sanitizedData = this.sanitizeRequestData(data);
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT);
 
     const requestOptions: RequestInit = {
       method: 'POST',
       headers: {
-        ...getSecurityHeaders(),
+        'Content-Type': 'application/json',
         ...options.headers,
       },
-      body: JSON.stringify(sanitizedData),
+      body: JSON.stringify(data),
       signal: controller.signal,
-      credentials: 'same-origin',
       ...options,
     };
 
@@ -65,11 +59,10 @@ export class SecureHttpClient {
     const requestOptions: RequestInit = {
       method: 'GET',
       headers: {
-        ...getSecurityHeaders(),
+        'Content-Type': 'application/json',
         ...options.headers,
       },
       signal: controller.signal,
-      credentials: 'same-origin',
       ...options,
     };
 
@@ -94,26 +87,5 @@ export class SecureHttpClient {
       
       throw new Error('An unexpected error occurred');
     }
-  }
-
-  // Sanitize request data to prevent XSS and injection attacks
-  private static sanitizeRequestData(data: unknown): unknown {
-    if (typeof data === 'string') {
-      return data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-                .replace(/javascript:/gi, '')
-                .replace(/on\w+\s*=/gi, '');
-    }
-
-    if (typeof data === 'object' && data !== null) {
-      const sanitized: any = Array.isArray(data) ? [] : {};
-      
-      for (const [key, value] of Object.entries(data)) {
-        sanitized[key] = this.sanitizeRequestData(value);
-      }
-      
-      return sanitized;
-    }
-
-    return data;
   }
 }

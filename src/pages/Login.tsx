@@ -6,8 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { SecureHttpClient } from '@/utils/httpClient';
-import { WEBHOOK_CONFIG } from '@/config/webhooks';
+import { supabase } from '@/config/supabase';
 import { LoginSchema, SignupSchema, ForgotPasswordSchema, authRateLimiter } from '@/utils/authValidation';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -155,11 +154,18 @@ const Login = () => {
       // Validate input
       const validatedData = ForgotPasswordSchema.parse({ email: forgotPasswordEmail });
       
-      await SecureHttpClient.post(WEBHOOK_CONFIG.FORGOT_PASSWORD_WEBHOOK, validatedData);
+      const { error } = await supabase.auth.resetPasswordForEmail(validatedData.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        setForgotPasswordError(error.message);
+        return;
+      }
       
       toast({
-        title: "Password retrieval Email Sent",
-        description: `We've sent password retrieval instructions to ${validatedData.email}. Please check your email (including spam folder) and follow the link to retrieve your password.`,
+        title: "Password Reset Email Sent",
+        description: `We've sent password reset instructions to ${validatedData.email}. Please check your email (including spam folder) and follow the link to reset your password.`,
       });
       
       // Clear form and close dialog on success
@@ -174,7 +180,7 @@ const Login = () => {
         setForgotPasswordError(firstError.message);
       } else {
         const errorMessage = error instanceof Error ? error.message : "Network error occurred";
-        setForgotPasswordError(`Failed to send retrieval email: ${errorMessage}. Please try again or contact support if the problem persists.`);
+        setForgotPasswordError(`Failed to send reset email: ${errorMessage}. Please try again or contact support if the problem persists.`);
       }
     } finally {
       setIsForgotPasswordLoading(false);
@@ -299,9 +305,9 @@ const Login = () => {
         <Dialog open={isForgotPasswordOpen} onOpenChange={handleForgotPasswordDialogChange}>
           <DialogContent className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 text-white">
             <DialogHeader>
-              <DialogTitle className="text-white font-dm-sans">Forgot Password?</DialogTitle>
+              <DialogTitle className="text-white font-dm-sans">Reset Password</DialogTitle>
               <DialogDescription className="text-gray-400">
-                Enter your email address and we'll send you a link to retrieve your password.
+                Enter your email address and we'll send you a link to reset your password.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleForgotPassword} className="space-y-4">
@@ -338,7 +344,7 @@ const Login = () => {
                 aria-label="Send password reset email"
               >
                 <Lock className="w-4 h-4 mr-2" />
-                {isForgotPasswordLoading ? 'Sending Retrieval Email...' : 'Send Retrieval Email'}
+                {isForgotPasswordLoading ? 'Sending Reset Email...' : 'Send Reset Email'}
               </Button>
             </form>
           </DialogContent>
