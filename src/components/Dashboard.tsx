@@ -150,25 +150,37 @@ const Dashboard = ({ activeView }: DashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-8">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 lg:mb-8">
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">{title}</h1>
-            <p className="text-muted-foreground mt-1 lg:mt-2 text-sm lg:text-base">{description}</p>
+    <div className="flex-1 h-screen overflow-hidden">
+      <div className="h-full flex flex-col p-4 sm:p-6 lg:p-8">
+        {/* Enhanced Header Section - Responsive */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-6 flex-shrink-0">
+          <div className="space-y-2 sm:space-y-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-dm-sans bg-gradient-to-r from-foreground via-primary/80 to-primary bg-clip-text text-transparent">
+              {title}
+            </h1>
+            <p className="text-muted-foreground max-w-full sm:max-w-2xl font-inter text-sm sm:text-base lg:text-lg leading-relaxed">
+              {description}
+            </p>
           </div>
-          <div className="flex gap-2 lg:gap-4">
-            <Button variant="outline" size="sm" className="lg:size-default">
-              <Download className="h-4 w-4 mr-1 lg:mr-2" />
-              <span className="hidden sm:inline">Export Data</span>
-              <span className="sm:hidden">Export</span>
+          
+          {/* Enhanced Export Button */}
+          <div className="flex gap-3 flex-shrink-0">
+            <Button 
+              className="bg-gradient-secondary text-success-foreground font-medium font-dm-sans transition-all duration-300 shadow-lg hover:shadow-success border-0 rounded-xl px-6 py-3 text-sm sm:text-base w-full sm:w-auto group"
+              size="lg"
+            >
+              <Download className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+              Export Data
             </Button>
           </div>
         </div>
-        
-        <main className="space-y-6 lg:space-y-8">
-          {renderContent()}
-        </main>
+
+        {/* Main Content - Flexible container */}
+        <div className="flex-1 overflow-auto">
+          <div className="space-y-6 h-full">
+            {renderContent()}
+          </div>
+        </div>
       </div>
     </div>
   );
