@@ -22,24 +22,25 @@ const StageColumn: React.FC<StageColumnProps> = ({
 }) => {
   return (
     <div className={`flex-shrink-0 animate-fade-in ${
-      isMobile ? 'w-72 snap-center' : 'w-80'
+      isMobile ? 'w-64 sm:w-72 snap-center' : 'w-72 lg:w-80 xl:w-96'
     }`}>
-      <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 h-full shadow-xl hover:shadow-2xl transition-all duration-300">
-        <CardHeader className="pb-4">
+      <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 h-full shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col">
+        <CardHeader className="pb-4 flex-shrink-0">
           <StageHeader stage={stage} />
         </CardHeader>
         
-        <CardContent className="p-4 pt-0">
+        <CardContent className="p-4 pt-0 flex-1 overflow-hidden flex flex-col">
           <Droppable droppableId={stage.id}>
             {(provided, snapshot) => (
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-all duration-300 ${
+                className={`flex-1 space-y-3 rounded-lg p-2 transition-all duration-300 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 ${
                   snapshot.isDraggingOver 
                     ? 'bg-gray-800/60 border-2 border-dashed border-gray-600' 
                     : 'bg-transparent'
                 }`}
+                style={{ minHeight: '200px' }}
               >
                 {stage.deals.map((deal, index) => (
                   <Draggable key={deal.id} draggableId={deal.id} index={index}>
