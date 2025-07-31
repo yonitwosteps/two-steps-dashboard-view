@@ -5,50 +5,25 @@ import { Card, CardContent, CardHeader } from './ui/card';
 import EnhancedDealCard from './EnhancedDealCard';
 import StageHeader from './StageHeader';
 import AddDealButton from './AddDealButton';
-
-interface Deal {
-  id: string;
-  name: string;
-  value: number;
-  company: string;
-  owner: string;
-  stage: string;
-  age: number;
-  lastContact: string;
-  nextTask: string;
-  probability: number;
-  avatar?: string;
-  tags: string[];
-  priority: 'low' | 'medium' | 'high';
-}
-
-interface Stage {
-  id: string;
-  name: string;
-  probability: number;
-  color: string;
-  deals: Deal[];
-}
+import { type Deal, type Stage } from '../hooks/useDealsStore';
 
 interface StageColumnProps {
   stage: Stage;
   selectedDeals: string[];
-  draggedItemId: string | null;
-  getDragStyle: (id: string) => React.CSSProperties;
-  handleDragStart: (e: MouseEvent | TouchEvent, id: string) => void;
   onDealClick: (deal: Deal) => void;
+  isMobile?: boolean;
 }
 
 const StageColumn: React.FC<StageColumnProps> = ({
   stage,
   selectedDeals,
-  draggedItemId,
-  getDragStyle,
-  handleDragStart,
-  onDealClick
+  onDealClick,
+  isMobile = false
 }) => {
   return (
-    <div className="flex-shrink-0 w-80 animate-fade-in">
+    <div className={`flex-shrink-0 animate-fade-in ${
+      isMobile ? 'w-72 snap-center' : 'w-80'
+    }`}>
       <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 h-full shadow-xl hover:shadow-2xl transition-all duration-300">
         <CardHeader className="pb-4">
           <StageHeader stage={stage} />
@@ -79,14 +54,7 @@ const StageColumn: React.FC<StageColumnProps> = ({
                           deal={deal} 
                           onClick={() => onDealClick(deal)}
                           isSelected={selectedDeals.includes(deal.id)}
-                          isDragging={snapshot.isDragging || draggedItemId === deal.id}
-                          dragStyle={getDragStyle(deal.id)}
-                          onDragHandleMouseDown={(e) => {
-                            handleDragStart(e.nativeEvent, deal.id);
-                          }}
-                          onDragHandleTouchStart={(e) => {
-                            handleDragStart(e.nativeEvent, deal.id);
-                          }}
+                          isDragging={snapshot.isDragging}
                         />
                       </div>
                     )}

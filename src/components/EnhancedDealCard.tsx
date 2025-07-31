@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback } from './ui/avatar';
@@ -12,43 +12,21 @@ import {
   Clock,
   AlertTriangle
 } from 'lucide-react';
-
-interface Deal {
-  id: string;
-  name: string;
-  value: number;
-  company: string;
-  owner: string;
-  stage: string;
-  age: number;
-  lastContact: string;
-  nextTask: string;
-  probability: number;
-  avatar?: string;
-  tags: string[];
-  priority: 'low' | 'medium' | 'high';
-}
+import { type Deal } from '../hooks/useDealsStore';
 
 interface EnhancedDealCardProps {
   deal: Deal;
   onClick: () => void;
   isSelected: boolean;
   isDragging?: boolean;
-  dragStyle?: React.CSSProperties;
-  onDragHandleMouseDown?: (event: React.MouseEvent) => void;
-  onDragHandleTouchStart?: (event: React.TouchEvent) => void;
 }
 
 const EnhancedDealCard: React.FC<EnhancedDealCardProps> = ({ 
   deal, 
   onClick, 
   isSelected,
-  isDragging = false,
-  dragStyle = {},
-  onDragHandleMouseDown,
-  onDragHandleTouchStart
+  isDragging = false
 }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const getAgeColor = (age: number) => {
     if (age <= 7) return 'text-green-400';
@@ -67,16 +45,12 @@ const EnhancedDealCard: React.FC<EnhancedDealCardProps> = ({
 
   return (
     <Card 
-      ref={cardRef}
       className={`bg-gray-800/80 border-gray-700/50 hover:border-gray-600/50 cursor-pointer transition-all duration-200 hover:shadow-xl group ${
         isSelected ? 'ring-2 ring-blue-500 border-blue-500/50' : ''
       } ${
-        isDragging ? 'rotate-3 scale-105 shadow-2xl z-50 opacity-90' : 'hover:scale-[1.02]'
+        isDragging ? 'shadow-2xl z-50 opacity-90' : 'hover:scale-[1.02]'
       }`}
       onClick={onClick}
-      style={dragStyle}
-      onMouseDown={onDragHandleMouseDown}
-      onTouchStart={onDragHandleTouchStart}
     >
       <CardContent className="p-4 space-y-3">
         {/* Header with company avatar and priority */}
