@@ -7,6 +7,34 @@ import { Badge } from './ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const DashboardOverview = () => {
+  // MetricCard component definition
+  const MetricCard = ({ title, value, change, changeType, icon: Icon, iconColor, lastMonth }: any) => (
+    <Card className="glass-card p-6 hover:bg-card/80 transition-all duration-300 group">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-muted-foreground text-sm font-medium">{title}</h3>
+        <div className={`p-2 rounded-lg bg-gradient-to-br ${iconColor}`}>
+          <Icon className="w-5 h-5 text-white" />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="text-2xl font-bold text-foreground group-hover:scale-105 transition-transform">
+          {value}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+            changeType === 'positive' 
+              ? "bg-emerald-500/20 text-emerald-400" 
+              : "bg-red-500/20 text-red-400"
+          }`}>
+            {change}
+          </span>
+          <span className="text-muted-foreground text-xs">Last month: {lastMonth}</span>
+        </div>
+      </div>
+    </Card>
+  );
+
   // Mock data for metrics matching the reference design
   const metrics = [
     {
@@ -91,32 +119,6 @@ const DashboardOverview = () => {
     }
   ];
 
-  const MetricCard = ({ title, value, change, changeType, icon: Icon, iconColor, lastMonth }: any) => (
-    <Card className="glass-card p-6 hover:bg-card/80 transition-all duration-300 group">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-muted-foreground text-sm font-medium">{title}</h3>
-        <div className={`p-2 rounded-lg bg-gradient-to-br ${iconColor}`}>
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <div className="text-2xl font-bold text-foreground group-hover:scale-105 transition-transform">
-          {value}
-        </div>
-        <div className="flex items-center justify-between">
-          <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-            changeType === 'positive' 
-              ? "bg-emerald-500/20 text-emerald-400" 
-              : "bg-red-500/20 text-red-400"
-          }`}>
-            {change}
-          </span>
-          <span className="text-muted-foreground text-xs">Last month: {lastMonth}</span>
-        </div>
-      </div>
-    </Card>
-  );
 
   return (
     <div className="space-y-8">
