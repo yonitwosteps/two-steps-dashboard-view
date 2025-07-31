@@ -22,22 +22,22 @@ const StageColumn: React.FC<StageColumnProps> = ({
 }) => {
   return (
     <div className={`flex-shrink-0 animate-fade-in ${
-      isMobile ? 'w-72 snap-center' : 'w-80'
+      isMobile ? 'w-72 snap-center' : 'min-w-[280px] lg:w-80 xl:w-96'
     }`}>
-      <Card className="bg-gray-900/60 backdrop-blur-sm border-gray-700/50 h-full shadow-xl hover:shadow-2xl transition-all duration-300">
+      <Card className="bg-card/60 backdrop-blur-sm border h-full shadow-lg hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-4">
           <StageHeader stage={stage} />
         </CardHeader>
         
-        <CardContent className="p-4 pt-0">
+        <CardContent className="p-3 lg:p-4 pt-0">
           <Droppable droppableId={stage.id}>
             {(provided, snapshot) => (
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-all duration-300 ${
+                className={`space-y-2 lg:space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto rounded-lg p-2 transition-all duration-300 ${
                   snapshot.isDraggingOver 
-                    ? 'bg-gray-800/60 border-2 border-dashed border-gray-600' 
+                    ? 'bg-muted/50 border-2 border-dashed border-primary/40' 
                     : 'bg-transparent'
                 }`}
               >
@@ -48,7 +48,9 @@ const StageColumn: React.FC<StageColumnProps> = ({
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="transition-all duration-200"
+                        className={`transition-all duration-200 ${
+                          snapshot.isDragging && "rotate-1 scale-105 shadow-lg"
+                        }`}
                       >
                         <EnhancedDealCard 
                           deal={deal} 

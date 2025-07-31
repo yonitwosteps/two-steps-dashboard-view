@@ -66,71 +66,59 @@ const PipelineBoard = () => {
   if (!displayPipeline) return <div>Pipeline not found</div>;
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4 sm:p-6">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <PipelineSelector 
-            pipelines={pipelines}
-            selectedPipeline={selectedPipelineId}
-            onPipelineChange={setSelectedPipelineId}
-          />
-          
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+    <div className="h-full">
+      <div className="flex flex-col h-full p-4 lg:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <PipelineSelector 
+              pipelines={pipelines}
+              selectedPipeline={selectedPipelineId}
+              onPipelineChange={setSelectedPipelineId}
+            />
+            <div className="relative w-full sm:w-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search deals..."
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
-                className="pl-10 w-64 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
+                className="pl-9 w-full sm:w-64"
               />
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="border-gray-700 bg-gray-800/50 hover:bg-gray-700/80 text-gray-300 hover:text-white"
-            >
-              <Filter className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="text-xs">
+                <Filter className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Filter</span>
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs">
+                <Settings className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Settings</span>
+              </Button>
+            </div>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="border-gray-700 bg-gray-800/50 hover:bg-gray-700/80 text-gray-300 hover:text-white"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Pipeline Settings
-          </Button>
-          <Button 
-            size="sm" 
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-          >
+          <Button size="sm">
             <Plus className="h-4 w-4 mr-2" />
             Add Deal
           </Button>
         </div>
-      </div>
 
-      <PipelineStats pipeline={displayPipeline} />
+        <PipelineStats pipeline={displayPipeline} />
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className={`flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800 ${
-          isMobile ? 'snap-x snap-mandatory' : ''
-        }`}>
-          {displayPipeline.stages.map(stage => (
-            <StageColumn
-              key={stage.id}
-              stage={stage}
-              selectedDeals={selectedDeals}
-              onDealClick={handleDealClick}
-              isMobile={isMobile}
-            />
-          ))}
+        <div className="flex-1 mt-6 min-h-0">
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-3 lg:gap-6 overflow-x-auto pb-4 h-full">
+              {displayPipeline.stages.map((stage) => (
+                <StageColumn
+                  key={stage.id}
+                  stage={stage}
+                  selectedDeals={selectedDeals}
+                  onDealClick={handleDealClick}
+                  isMobile={isMobile}
+                />
+              ))}
+            </div>
+          </DragDropContext>
         </div>
-      </DragDropContext>
+      </div>
 
       <DealQuickView
         deal={selectedDeal}
