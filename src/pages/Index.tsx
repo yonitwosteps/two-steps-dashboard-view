@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import { Toaster } from '../components/ui/toaster';
-import { LayoutProvider, useLayout } from '../contexts/LayoutContext';
 
-const MainLayout = () => {
+const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
-  const { sidebarCollapsed } = useLayout();
 
   const handleViewChange = (view: string) => {
     setActiveView(view);
   };
 
   return (
-    <div className="min-h-screen dark bg-background relative overflow-hidden">
+    <div className="min-h-screen dark bg-background flex w-full relative overflow-hidden">
       {/* Enhanced Background Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute top-10 right-4 lg:right-10 w-48 h-48 lg:w-96 lg:h-96 bg-primary/8 rounded-full blur-3xl animate-pulse" />
@@ -25,31 +23,28 @@ const MainLayout = () => {
         <div className="absolute bottom-1/4 left-1/3 w-20 h-20 lg:w-40 lg:h-40 bg-warning/6 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
       
-      <div className="flex min-h-screen w-full">
-        {/* Sidebar */}
+      {/* Sidebar - Hidden on mobile, shown on larger screens */}
+      <div className="hidden lg:block fixed left-0 top-0 h-screen z-20">
         <Sidebar 
           activeView={activeView} 
           onViewChange={handleViewChange}
         />
-        
-        {/* Main Content - Dynamically responsive to sidebar state */}
-        <div className={`flex-1 transition-all duration-300 ease-out ${
-          sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
-        } w-full`}>
-          <Dashboard activeView={activeView} />
-        </div>
+      </div>
+      
+      {/* Mobile Sidebar - Managed by Sidebar component */}
+      <Sidebar 
+        className="lg:hidden"
+        activeView={activeView} 
+        onViewChange={handleViewChange}
+      />
+      
+      {/* Main Content - Responsive margins */}
+      <div className="flex-1 transition-all duration-300 ease-out lg:ml-64 w-full">
+        <Dashboard activeView={activeView} />
       </div>
       
       <Toaster />
     </div>
-  );
-};
-
-const Index = () => {
-  return (
-    <LayoutProvider>
-      <MainLayout />
-    </LayoutProvider>
   );
 };
 

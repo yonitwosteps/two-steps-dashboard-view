@@ -21,7 +21,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
-import { useLayout } from '../contexts/LayoutContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +37,7 @@ interface SidebarProps {
 
 const Sidebar = ({ className, activeView, onViewChange }: SidebarProps) => {
   const { user, logout } = useAuth();
-  const { sidebarCollapsed: isCollapsed, setSidebarCollapsed: setIsCollapsed } = useLayout();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const menuItems = [
